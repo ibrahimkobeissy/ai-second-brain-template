@@ -8,6 +8,7 @@ This document defines the core philosophy, workflows, and operational logic of t
 - **Strict Separation (The Hard Wall)**: Keep Work, Personal, and Resources folders strictly separated to prevent context bleed. However, cross-domain reasoning is enabled via the `type` frontmatter property (e.g. `evergreen`, `synthesis`), allowing cross-Area insights.
 - **Link-First Architecture**: Knowledge value lives in the connections (`[[wikilinks]]`), not just the content.
 - **Agent-Augmented, Not Agent-Led**: AI agents (Claude/Antigravity) automate the labor (curation, synthesis, linting) while the human retains the final understanding.
+- **Design Here, Build Elsewhere**: The vault is a whiteboard for thinking, researching, architecting, and planning — never for building applications. An Area matures a design until it's solid, then the actual tool/app is built in a **separate project outside the vault**. Source code and real/sensitive operational data (bank statements, credentials, live datasets) stay out of the vault. This is universal — it applies to every Area.
 
 ## 2. Vault Structure (ARA)
 - **`00-inbox/`**: Raw captures, web clippings, and fleeting notes.
@@ -54,14 +55,14 @@ flowchart TD
 
 ### Workflow Stages:
 1. **Capture**: Raw material lands in `00-inbox/`.
-2. **Curate (`curate-bookmarks`)**: The agent reads the inbox items, extracts the core value ("what we can steal"), and moves them into a `draft/` folder within a specific Area. The source is logged in `processed-sources.md`.
+2. **Curate (`curate-bookmarks`)**: The agent judges each inbox item **independently**, extracts the core value ("what we can steal"), and writes a draft into the `draft/` folder of **every** Area it's genuinely relevant to (one, several — one area-specific draft each, cross-linked — or none). The source is logged in `processed-sources.md`, keyed per (URL, Area).
 3. **Synthesize (`synthesize-drafts`)**: The agent takes multiple drafts, analyzes them against each other using a scientific thematic matrix, and generates a unified Strategic Plan (`synthesis/`).
 4. **Action (`plan-to-kanban`)**: The agent reads the Strategic Plan, extracts the actionable tasks, deduplicates them, and appends them to the Area's `todo-kanban.md`.
 5. **Clean**: Once the knowledge is durable and actionable, the spent intermediates (the original bookmark and the draft) are deleted.
 
 ## 4. Operational Skills (Toolbelt)
 - **`init-area`**: Interactively creates a new Area by challenging the idea, defining goals/scope, and scaffolding the required hub notes, Kanban board, and folders.
-- **`scout-idea`**: Validates new ideas, challenges their utility, and scouts for external resources/tools to build them.
+- **`scout-idea`**: Challenges a new idea's value, then runs a **broad discovery sweep** — a wide net of candidate tools/OSS/SaaS/articles/forum threads (verified picks + unverified candidates, grouped by sub-angle) for when you have no bookmarks yet. Scout *gathers*; `curate-bookmarks` narrows — it deliberately does not pre-pick the single best tool.
 - **`curate-bookmarks`**: Processes inbox items into actionable Area drafts.
 - **`synthesize-drafts`**: Synthesizes multiple drafts in an Area into a strategic "Global Plan" using scientific thematic synthesis.
 - **`plan-to-kanban`**: Reads a synthesis document's action plan and extracts action items into the Area's Kanban board, deduplicating them.
@@ -81,6 +82,6 @@ flowchart TD
 
 ## 7. Post-Action Checklist
 To ensure the system remains robust and documented, every major change triggers this checklist:
-1. **Sync `README.md`**: Document the new capability or structural shift.
+1. **Sync `second-brain-operating-system.md`**: Document the new capability or structural shift.
 2. **Log `agent-kanban.md`**: Add a card under **Todo**, assigned to the other agent.
 3. **Audit ARA**: Confirm that no "projects" folders were created.
