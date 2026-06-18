@@ -49,24 +49,52 @@ followed by the clipped article body. Use `source` as the link, `title` as the
 source title, and the body to judge relevance and mine ideas. Skip `README.md` and
 any non-`.md` file in the inbox.
 
-## Matching a bookmark to an Area
+## Matching a bookmark to its Area(s)
 
-Read the bookmark (at least frontmatter + skim the body), then pick the single
-**best-fit** Area by comparing the bookmark's subject to each Area's name and
-description. Judge real topical overlap, not surface keywords.
+Evaluate **each bookmark on its own merits** — independently and mechanically.
+Judge it only against its own content, frontmatter, and context; never let a
+sibling bookmark, the batch order, or where earlier bookmarks landed bias the
+call. Two bookmarks in the same sweep are unrelated decisions.
 
-- Confident match → produce a draft for that Area.
-- No Area is a genuine fit → **do not** force it. In headless mode, leave the
-  bookmark in the inbox untouched and record it as "no match" in the report. In
-  interactive mode, the user names the Area, so this does not apply.
+Read the bookmark (at least frontmatter + skim the body), then **test it against
+every Area independently**, comparing its subject to each Area's name and hub
+description. Judge real topical overlap, not surface keywords. A bookmark can be
+relevant to **one, several, or no** Areas:
+
+- **Genuinely relevant to one Area** → one draft for that Area.
+- **Genuinely relevant to multiple Areas** → a **separate, area-specific draft in
+  each** (see "Multi-area bookmarks"). Assign an Area only on real relevance, not
+  faint association — don't spray a bookmark across Areas.
+- **No Area is a genuine fit** → **do not** force it. Headless mode: leave the
+  bookmark in the inbox untouched, record it as "no match" in the report.
+  Interactive mode: the user names the Area(s), so this does not apply.
+
+## Multi-area bookmarks
+
+A single source often pays off differently in different Areas — the same article
+yields a different "what can we steal" for each. When a bookmark is genuinely
+relevant to more than one Area:
+
+- Write a **separate draft per Area**, each in that Area's own `draft/` folder,
+  with its **own** area-specific "Why it's relevant" and "What we can steal." These
+  are not duplicates — each is a distinct, area-framed extraction of one source.
+- **Cross-link the siblings:** list the other Areas' drafts under `## Related` (via
+  `[[wikilink]]`) in each one, so the source stays retrievable from any of its
+  Areas and the graph is preserved.
+- All drafts share the same `source` URL and `captured_from`; the de-dup ledger is
+  **keyed per (URL, Area)** (see below), so each Area is curated exactly once.
+- **Anti-redundancy guard:** if one Area's take would be *identical* to another's
+  (no distinct steal), don't make a second copy — keep one draft and link to it
+  from the other Area instead (CLAUDE.md §2: prefer linking over duplicating).
 
 ## De-duplication (processed-sources ledger)
 
 A persistent ledger at `vault/99-system/maintenance/processed-sources.md` records every source already processed, so a re-bookmark of the same link is caught even after the bookmark/draft notes are deleted (the vault is kept lite — CLAUDE.md §2).
 
 - **Normalize the URL first:** scheme + lowercased host + path, with tracking query params and `#fragments` stripped (drop `?s=…&t=…` on X links).
-- **Before drafting:** look up that normalized URL in the ledger. If present, it's a **possible duplicate** — interactive mode: surface it and ask whether to proceed or skip; headless mode: **skip** the bookmark, record it as "duplicate" in the report, don't redraft.
-- **After drafting** (and deleting the inbox bookmark): **append a row** — `| date | normalized-url | title | stage | landed-in |` with `stage: curated` and `landed-in` = the draft. (`synthesize-drafts` later bumps the row to `synthesized`.)
+- **De-dup is keyed per (normalized URL, Area).** One source may legitimately land in several Areas, so it can have several rows — one per Area. A row's `landed-in` draft path carries the Area, so the Area is derived from the row (no format change).
+- **Before drafting into an Area:** look up that (normalized URL, Area) pair in the ledger. If present, it's a **possible duplicate for that Area** — interactive mode: surface it and ask whether to proceed or skip; headless mode: **skip that Area** for this bookmark and record it as "duplicate (Area)". A URL already curated for Area A does **not** block curating it for a genuinely-relevant new Area B.
+- **After drafting** (and once all the bookmark's relevant Areas are handled, deleting the inbox bookmark): **append one row per draft** — `| date | normalized-url | title | stage | landed-in |` with `stage: curated` and `landed-in` = that Area's draft. (`synthesize-drafts` later bumps each row to `synthesized`.)
 
 ## Output: writing the draft
 
@@ -93,17 +121,22 @@ Run the full sweep with **no questions**:
 
 1. Discover Areas (see above).
 2. List every bookmark in `vault/00-inbox/` (skip `README.md` / non-`.md`).
-3. For each bookmark:
-   a. Read it and pick the best-fit Area (or "no match").
-   b. **De-dup check:** normalize its source URL and look it up in the ledger; if
-      present, skip it and record it as "duplicate" in the report (don't redraft).
-   c. If matched: write the draft to that Area's `draft/` folder, **delete the
-      original inbox bookmark**, then **append a `curated` row to the ledger**. The
-      draft preserves the original via the `source` URL and `captured_from` field;
-      deletions are recoverable from git.
-   d. If no match: leave the bookmark in the inbox, untouched.
-4. Print a summary report: a table of `bookmark → area → draft path`, plus a list
-   of any "no match" bookmarks left in the inbox.
+3. For each bookmark (each judged **independently** — see "Matching"):
+   a. Read it and determine **every** genuinely-relevant Area (one, several, or
+      "no match").
+   b. **De-dup check, per Area:** normalize its source URL; for each relevant Area,
+      look up the (URL, Area) pair in the ledger. Skip any Area already curated for
+      this URL (record it "duplicate (Area)"); keep the Areas that are new.
+   c. For each remaining relevant Area: write an **area-specific draft** to that
+      Area's `draft/` folder and **append a `curated` row** (per (URL, Area)) to the
+      ledger. When the bookmark lands in 2+ Areas, **cross-link the sibling drafts**
+      under `## Related`.
+   d. Once all relevant Areas are handled, **delete the original inbox bookmark**
+      (its `source` / `captured_from` live on in each draft; deletions are
+      recoverable from git). If **no** Area matched (or every relevant Area was a
+      duplicate), leave the bookmark in the inbox, untouched.
+4. Print a summary report: a table of `bookmark → area(s) → draft path(s)`, plus
+   lists of any "no match" and "duplicate" bookmarks.
 
 ## Mode 2 — Interactive single-file (no arguments)
 
@@ -111,19 +144,21 @@ Ask, then act:
 
 1. Ask **which bookmark** to curate. Offer the current inbox `.md` files
    (excluding `README.md`) as choices so the user can pick one.
-2. Ask **which Area** to curate it against. Offer the discovered Areas as choices.
-3. Read the chosen bookmark. **De-dup check:** normalize its source URL and look it
-   up in the ledger; if present, tell the user it's a possible duplicate and ask
-   whether to proceed or skip.
-4. Write the draft into that Area's `draft/` folder, **delete the original** inbox
-   bookmark, then **append a `curated` row to the ledger**. The draft preserves the
-   source via the `source` URL and `captured_from` field; deletions are recoverable
-   from git.
-5. Report the draft path.
+2. Ask **which Area(s)** to curate it against — allow **selecting more than one**.
+   Offer the discovered Areas as choices.
+3. Read the chosen bookmark. **De-dup check (per Area):** normalize its source URL
+   and, for each chosen Area, look up the (URL, Area) pair; if present, tell the
+   user it's a possible duplicate for that Area and ask whether to proceed or skip.
+4. For each chosen Area, write an area-specific draft into that Area's `draft/`
+   folder and **append a `curated` row to the ledger**. When 2+ Areas are chosen,
+   cross-link the sibling drafts under `## Related`. Then **delete the original**
+   inbox bookmark (source preserved via `source` / `captured_from`; recoverable
+   from git).
+5. Report the draft path(s).
 
 ## Notes
 
 - Never write directly into an Area folder — always into its `draft/` subfolder.
-- One bookmark → one primary Area draft. If a bookmark is strongly relevant to a
-  second Area, mention it under "Related" rather than creating duplicates.
+- Each bookmark is judged **independently**; it can land in one Area, several (one
+  area-specific draft each, cross-linked), or none. See "Multi-area bookmarks."
 - Don't invent areas or build/lint/test steps — this is an Obsidian vault of notes.
