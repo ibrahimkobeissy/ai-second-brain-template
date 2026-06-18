@@ -26,7 +26,7 @@ strategic gaps.
     each other (the same blog post cited five times is one signal, not five). Weight by 
     source authority and independence; flag echo-chamber agreement.
 4.  **Strategic Appraisal:** Judge the weighted themes against the **Area Context** 
-    (the goals in the Area's README/notes). If there is no README, infer context from 
+    (the goals in the Area's hub note/notes). If there is no hub note, infer context from 
     the folder and notes — and say so explicitly in the output.
 5.  **Actionable Output:** Categorize into "The Core" (Build), "The Speculative" 
     (Validate), and "The Noise" (Discard), with reasoning tied back to the appraisal.
@@ -35,7 +35,7 @@ strategic gaps.
 
 - Work areas: `vault/01-work/areas/`
 - Personal areas: `vault/02-personal/areas/`
-- Area Context: `vault/<part>/areas/<area-slug>/README.md`
+- Area Context: `vault/<part>/areas/<area-slug>/<area-slug>.md` (the `type: moc` hub note)
 - Draft Folder: `vault/<part>/areas/<area-slug>/draft/`
 - Output Plan: `vault/<part>/areas/<area-slug>/synthesis/strategic-plan-{{kebab-topic}}.md`
 - Output Template: `assets/templates/strategy-draft.md` (in this skill folder)
@@ -53,9 +53,9 @@ strategic gaps.
 4.  **Ask User for Files:** Present the list of drafts and ask which ones to 
     include in the synthesis (multi-select).
 5.  **Read Context & Sources:**
-    - Read the Area's `README.md` for the strategic baseline. If it is missing, infer 
-      context from the folder name and other notes, and record that the appraisal ran 
-      without an explicit README.
+    - Read the Area's hub note (`<area-slug>.md`, `type: moc`) for the strategic baseline. 
+      If it is missing, fall back to a `README.md`; if neither exists, infer context from the 
+      folder name and other notes, and record that the appraisal ran without an explicit hub note.
     - Read every selected draft **in full** — skimming breaks traceability and weighting.
 6.  **Analyze & Generate:**
     - Use the Strategic Thematic Synthesis method.
@@ -93,5 +93,5 @@ strategic gaps.
   frontmatter stamp from step 8 (`status: synthesized` + `synthesized_into`).
 - Never write directly into the root of an Area folder — always use `draft/` for 
   raw clippings or `synthesis/` for strategic plans.
-- If the Area has no `README.md`, infer the context from the folder name and 
+- If the Area has no hub note (or `README.md`), infer the context from the folder name and 
   other notes in the root of the Area.

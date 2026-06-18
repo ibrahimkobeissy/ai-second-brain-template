@@ -2,7 +2,7 @@
 name: plan-to-kanban
 description: >-
   Reads a strategic synthesis document and extracts its action items into the Area's Kanban board. 
-  Ensures that planned tasks move out of the synthesis doc and into actionable tracking.
+  Copies the planned tasks into actionable tracking on the board; the synthesis doc stays the rationale of record.
 ---
 
 # Plan to Kanban
@@ -38,8 +38,8 @@ Read the selected synthesis document.
 Check if a `todo-kanban.md` exists in the root of the chosen Area (`vault/<part>/areas/<area-slug>/todo-kanban.md`).
 - **If it does not exist:** Create it by copying `templates/kanban.md` from this skill's directory.
 - **If it exists:** Read it first.
-- **Deduplication:** Check the existing tasks in the Kanban board. Do not add a task if a very similar or identical task already exists in any column (Todo, In Progress, Done, Archive).
-- **Append Tasks:** Add the new, non-duplicate extracted tasks to the top of the `## Todo` column in the Area's `todo-kanban.md`. Make sure to maintain valid Markdown format.
+- **Deduplication:** Check the existing tasks in the Kanban board. Do not add a task if a very similar or identical task already exists in any column (Todo, In Progress, Done, Archived).
+- **Append Tasks:** Add the new, non-duplicate extracted tasks to the top of the Todo column — match the `## Todo` heading **case-insensitively** (some older boards use `## TODO`) so tasks are never mis-placed or duplicated. Make sure to maintain valid Markdown format.
 
 ### 5. Feedback
 Provide a clear, brief confirmation to the user listing how many tasks were extracted and successfully added to the Kanban board, and note any duplicates that were skipped.

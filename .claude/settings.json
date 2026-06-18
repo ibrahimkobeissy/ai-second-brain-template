@@ -71,6 +71,8 @@
       "Bash(cat ~/.config/gcloud/*)"
     ],
     "allow": [
+      "Bash(python3 .claude/skills/vault-linter/lint.py)",
+      "WebSearch",
       "WebFetch(domain:*)",
       "Bash(git status)",
       "Bash(git diff *)",

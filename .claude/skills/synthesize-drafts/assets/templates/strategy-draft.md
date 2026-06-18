@@ -2,8 +2,9 @@
 type: synthesis
 status: active
 created: {{today}}
+area: "{{area_slug}}"
 tags:
-  - synthesis
+  - {{area_slug}}
 ---
 
 # Strategic Synthesis: {{topic_name}}
@@ -19,7 +20,7 @@ tags:
 | {{theme_1}} | {{sources_for_theme_1}} | {{weight_1}} | {{status_1}} |
 
 ## 2. Decision Logic & Strategic Appraisal
-*Compare findings against [[{{area_display_name}}]] goals. Area context: {{area_context_status}} (README present / inferred).*
+*Compare findings against [[{{area_display_name}}]] goals. Area context: {{area_context_status}} (hub note present / inferred).*
 
 - **Convergent Patterns:** {{convergent_summary}}
 - **Divergent Perspectives:** {{divergent_summary}}

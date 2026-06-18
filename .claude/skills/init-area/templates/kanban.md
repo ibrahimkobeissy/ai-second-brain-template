@@ -14,7 +14,7 @@ kanban-plugin: board
 
 
 
-## Archive
+## Archived
 
 %% kanban:settings
 ```

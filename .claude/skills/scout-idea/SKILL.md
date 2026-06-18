@@ -24,7 +24,7 @@ tokens by challenging the idea's worth before executing research.
 - Ask clarifying questions to fully understand the intent and scope of the idea.
 
 ### 2. The Challenge
-- **Read the Area first.** Read the Area's `README.md` and skim its existing notes — you cannot judge overlap or value without knowing what is already there.
+- **Read the Area first.** Read the Area's hub note (the `<area-slug>.md` MOC) and skim its existing notes — you cannot judge overlap or value without knowing what is already there.
 - Evaluate the idea in that context. Challenge it honestly: is it worth the time/tokens, or does it duplicate or contradict existing notes? Say so plainly.
 - If the idea does not survive the challenge, **stop here and tell the user** — do not scout links for a weak idea.
 

@@ -30,9 +30,9 @@ review and merge; it is never written directly into the Area.
 The set of valid Areas is **dynamic** — discover it at runtime, never hardcode it.
 List the immediate subdirectories of `vault/01-work/areas/` and
 `vault/02-personal/areas/`. Each subdirectory is one Area; its folder name is the
-`area-slug`. Ignore `README.md`, any `draft/` folder, and dotfiles. If an Area has
-a `README.md` or notes inside, read them to understand what the Area is about
-before matching.
+`area-slug`. Ignore the areas-index `README.md`, any `draft/` folder, and dotfiles.
+Read the Area's hub note (the `<area-slug>.md` MOC) and any other notes inside to
+understand what the Area is about before matching.
 
 ## Choosing the mode
 

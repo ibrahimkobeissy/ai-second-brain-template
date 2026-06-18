@@ -8,7 +8,6 @@ area: "{{area_slug}}"
 captured_from: "{{original_inbox_filename}}"
 tags:
   - curated
-  - draft
   - {{area_slug}}
 ---
 

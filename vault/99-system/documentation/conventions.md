@@ -29,7 +29,7 @@ Definitions for the `type` frontmatter field to ensure consistent cross-domain q
 - **`literature`**: A summary or extraction of key ideas from a short external source (article, tweet, video) in your own words, plus your reaction.
 - **`source`**: A deep, structured, analytical breakdown of a long or dense external source (book, academic paper, long report).
 - **`reference`**: Factual information, data, or system documentation (like this note) that you store for retrieval rather than deep thought.
-- **`moc`**: Map of Content. A hub or index note that organizes, categorizes, and serves as an entry point for an Area.
+- **`moc`**: Map of Content. A hub or index note that organizes, categorizes, and serves as an entry point for an Area. Each Area's `<area-slug>.md` is its MOC and **canonical context** — skills (`scout-idea`, `synthesize-drafts`, `curate-bookmarks`) read it as the Area's strategic baseline (no separate `README.md`).
 - **`daily`**: A chronological daily journal or log note.
 - **`draft`**: A curated, actionable note extracted from an inbox capture, waiting to be integrated or synthesized.
 - **`scout`**: A lightweight, agent-generated discovery note containing a ranked list of verified external links to evaluate a new idea.

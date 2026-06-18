@@ -5,7 +5,6 @@ status: active
 created: {{today}}
 area: "{{area_slug}}"
 tags:
-  - scout
   - {{area_slug}}
 ---
 
