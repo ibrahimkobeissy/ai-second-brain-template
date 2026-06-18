@@ -1,0 +1,95 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git rm *)",
+      "Bash(git merge *)",
+      "Bash(git rebase *)",
+      "Bash(git checkout -b *)",
+      "Bash(git reset --hard *)",
+      "Bash(git mv *)",
+
+      "Read(~/.ssh/**)",
+      "Edit(~/.ssh/**)",
+      "Write(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Edit(~/.aws/**)",
+      "Write(~/.aws/**)",
+      "Read(~/.gnupg/**)",
+      "Write(~/.gnupg/**)",
+      "Read(~/.config/gcloud/**)",
+      "Write(~/.config/gcloud/**)",
+      "Read(~/.azure/**)",
+      "Read(~/.kube/**)",
+      "Read(~/.oci/**)",
+      "Read(~/.docker/config.json)",
+      "Read(~/.netrc)",
+      "Read(~/.git-credentials)",
+      "Read(~/.config/gh/**)",
+      "Read(~/.npmrc)",
+      "Read(~/.pypirc)",
+
+      "Read(~/.config/anthropic/**)",
+      "Read(~/.claude/.credentials.json)",
+      "Read(~/.claude.json)",
+      "Read(~/.gemini/**)",
+
+      "Read(~/.bash_history)",
+      "Read(~/.zsh_history)",
+      "Read(~/.python_history)",
+      "Read(~/.psql_history)",
+
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/.env)",
+      "Read(./**/.env.*)",
+      "Read(./**/*.pem)",
+      "Read(./**/*.key)",
+      "Read(./**/*.p12)",
+      "Read(./**/*.pfx)",
+      "Read(./**/*.jks)",
+      "Read(./**/*.keystore)",
+      "Read(./**/id_rsa)",
+      "Read(./**/id_rsa.*)",
+      "Read(./**/id_ed25519)",
+      "Read(./**/id_ecdsa)",
+      "Read(./**/*service-account*.json)",
+      "Read(./**/*credentials*.json)",
+      "Read(./**/secrets.*)",
+      "Read(./**/*.secret)",
+      "Read(./**/*.tfstate)",
+      "Read(./**/*.tfstate.*)",
+      "Read(./**/.pgpass)",
+      "Read(./**/.my.cnf)",
+      "Read(./**/.vault-token)",
+
+      "Bash(cat ~/.ssh/*)",
+      "Bash(cat ~/.aws/*)",
+      "Bash(cat ~/.gnupg/*)",
+      "Bash(cat ~/.config/gcloud/*)"
+    ],
+    "allow": [
+      "WebFetch(domain:*)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git ls-files *)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/pending-reviews.sh\" Claude",
+            "statusMessage": "Checking pending maintenance reviews"
+          }
+        ]
+      }
+    ]
+  }
+}

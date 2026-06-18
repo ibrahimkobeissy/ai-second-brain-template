@@ -1,0 +1,25 @@
+# --- Obsidian (machine-specific state) ---
+# Keep .obsidian config (plugins, settings) tracked, but ignore per-machine workspace/cache.
+
+# Obsidian trash
+vault/.trash/
+
+# --- OS cruft ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- Editor / tooling ---
+.idea/
+*.swp
+*~
+
+.claude/settings.local.json
+vault/.obsidian/workspace.json
+vault/.obsidian/workspace-mobile.json
+vault/.obsidian/graph.json
