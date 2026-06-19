@@ -14,8 +14,10 @@ Initialize a new Area (either Work or Personal) by challenging the idea, definin
 - Output Folder: `vault/<part>/areas/<area-slug>/`
 - Output Hub Note: `vault/<part>/areas/<area-slug>/<area-slug>.md`
 - Output Kanban: `vault/<part>/areas/<area-slug>/todo-kanban.md`
+- Output To-Check: `vault/<part>/areas/<area-slug>/to-check.md`
 - Area Template: `templates/area-description.md`
 - Kanban Template: `templates/kanban.md`
+- To-Check Template: `templates/to-check.md`
 
 ## The Workflow
 
@@ -42,6 +44,7 @@ Create the directory structure for the new Area:
 1. **Kanban Board:** Copy `templates/kanban.md` to `vault/<part>/areas/<area-slug>/todo-kanban.md`.
 2. **Hub Note:** Copy `templates/area-description.md` to `vault/<part>/areas/<area-slug>/<area-slug>.md`.
    - Replace all placeholders (`{{area_title}}`, `{{area_slug}}`, `{{today}}`, `{{area_goal}}`, `{{area_idea}}`, `{{in_scope}}`, `{{out_of_scope}}`, `{{area_how}}`) with the validated answers from the context gathering phase.
+3. **To-Check Queue:** Copy `templates/to-check.md` to `vault/<part>/areas/<area-slug>/to-check.md`, replacing `{{area_title}}` and `{{area_slug}}`. This is the Area's triage queue and feeds the root [[dashboard]]; leave it with no `- [ ]` items (the user/agents add links over time).
 
 ### 5. Review
 Report back to the user that the Area has been successfully initialized, listing the paths of the created files and folders.

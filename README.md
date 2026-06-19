@@ -17,6 +17,7 @@ This document defines the core philosophy, workflows, and operational logic of t
 - **`03-resources/`**: Reference library and topics of interest not tied to a specific responsibility.
 - **`04-archive/`**: Inactive areas or resources; cold storage.
 - **`99-system/`**: Metadata, templates, attachments, and system documentation.
+- **`dashboard.md`** *(vault root)*: the live command center — **pending work** across every Area (open Kanban cards, `to-check` items, unsynthesized drafts/scouts, uncurated inbox, open peer reviews) plus **browse-by-`type`** cross-domain retrieval. Driven by the Tasks + Search plugins; no script, updates itself from the files.
 
 ## 3. The Operating Workflow (The Loop)
 The core engine of the Second Brain is the continuous loop of capturing raw data, processing it into actionable insights, and pruning the waste.
@@ -54,14 +55,14 @@ flowchart TD
 ```
 
 ### Workflow Stages:
-1. **Capture**: Raw material lands in `00-inbox/`.
+1. **Capture**: Raw material lands in `00-inbox/` (global) or an Area's `to-check.md` (a per-Area triage queue of raw links/items). Both surface as pending work on the root [[dashboard]] until curated.
 2. **Curate (`curate-bookmarks`)**: The agent judges each inbox item **independently**, extracts the core value ("what we can steal"), and writes a draft into the `draft/` folder of **every** Area it's genuinely relevant to (one, several — one area-specific draft each, cross-linked — or none). The source is logged in `processed-sources.md`, keyed per (URL, Area).
 3. **Synthesize (`synthesize-drafts`)**: The agent takes multiple drafts, analyzes them against each other using a scientific thematic matrix, and generates a unified Strategic Plan (`synthesis/`).
 4. **Action (`plan-to-kanban`)**: The agent reads the Strategic Plan, extracts the actionable tasks, deduplicates them, and appends them to the Area's `todo-kanban.md`.
 5. **Clean**: Once the knowledge is durable and actionable, the spent intermediates (the original bookmark and the draft) are deleted.
 
 ## 4. Operational Skills (Toolbelt)
-- **`init-area`**: Interactively creates a new Area by challenging the idea, defining goals/scope, and scaffolding the required hub notes, Kanban board, and folders.
+- **`init-area`**: Interactively creates a new Area by challenging the idea, defining goals/scope, and scaffolding the required hub notes, Kanban board, `to-check.md` triage queue, and folders.
 - **`scout-idea`**: Challenges a new idea's value, then runs a **broad discovery sweep** — a wide net of candidate tools/OSS/SaaS/articles/forum threads (verified picks + unverified candidates, grouped by sub-angle) for when you have no bookmarks yet. Scout *gathers*; `curate-bookmarks` narrows — it deliberately does not pre-pick the single best tool.
 - **`curate-bookmarks`**: Processes inbox items into actionable Area drafts.
 - **`synthesize-drafts`**: Synthesizes multiple drafts in an Area into a strategic "Global Plan" using scientific thematic synthesis.

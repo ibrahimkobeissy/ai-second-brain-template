@@ -35,6 +35,12 @@ Definitions for the `type` frontmatter field to ensure consistent cross-domain q
 - **`scout`**: A lightweight, agent-generated discovery note containing a ranked list of verified external links to evaluate a new idea.
 - **`synthesis`**: An agent-generated strategic plan created by analyzing and weighing multiple drafts against an Area's context.
 
+## Special (non-note) Files
+Two per-Area files are checklists, not notes — they carry **no standard frontmatter** and are driven by Obsidian plugins. Both feed the root [[dashboard]].
+
+- **`todo-kanban.md`** — the Area's Kanban board (`kanban-plugin: board`). Open cards are `- [ ]` lines under `## Todo` / `## In Progress`.
+- **`to-check.md`** — the Area's **triage queue**: raw links/items captured fast, waiting to be curated into `draft/` (via `curate-bookmarks`) or verified (via `scout-idea`). Format: a `# To Check — <Area>` heading, a one-line purpose, `Part of [[area]]`, then **one `- [ ]` per item** (URL + short `—` note, optionally grouped under `##` sub-headings). Once an item is acted on, **delete its line** (git keeps history). Never leave an empty `- [ ]` — it shows as a blank task on the dashboard. Created automatically by `init-area`.
+
 ## Tags
 - lowercase, kebab-case, **plural** for topics (`agents`, not `Agent` or `agent`).
 - `type` and `status` live in frontmatter, **not** as tags.
