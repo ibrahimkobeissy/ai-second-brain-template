@@ -5,7 +5,7 @@
 ![Obsidian](https://img.shields.io/badge/Obsidian-vault-7c3aed)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-agent-da7756)
 ![Antigravity](https://img.shields.io/badge/Antigravity-agent-1a73e8)
-![License: MIT](https://img.shields.io/badge/License-MIT-green)
+![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey)
 
 This repository is a **template**: clone it, open it in Obsidian, point your AI agent at it, and you have a working *knowledge operating system* — an ARA-structured vault plus a toolbelt of skills that turn raw bookmarks into strategic plans and tracked work. **No personal areas or notes are included** — you bring your own; the scaffolding and tooling are the product.
 
@@ -83,4 +83,8 @@ Issues and PRs welcome — especially new skills and workflow improvements. New 
 
 ## 📄 License
 
-MIT © 2026 Ibrahim Kobeissy. See [LICENSE](LICENSE).
+[**CC BY-NC-SA 4.0**](https://creativecommons.org/licenses/by-nc-sa/4.0/) © 2026 Ibrahim Kobeissy. See [LICENSE](LICENSE).
+
+You may use, adapt, and share this template for **non-commercial** purposes with attribution, and must license any derivatives under the same terms. **Commercial use requires separate permission.**
+
+> The bundled Obsidian plugins under `vault/.obsidian/plugins/` are third-party software and remain under their own original licenses (MIT/GPL) — see the carve-out in [LICENSE](LICENSE).
