@@ -7,7 +7,7 @@
 ![Codex](https://img.shields.io/badge/Codex-agent-10a37f)
 ![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey)
 
-This repository is a **template**: clone it, open it in Obsidian, point your AI agent at it, and you have a working *knowledge operating system* — an ARA-structured vault plus a toolbelt of skills that turn raw bookmarks into strategic plans and tracked work. **No personal areas or notes are included** — you bring your own; the scaffolding and tooling are the product.
+This repository is a **template**: clone it, open it in Obsidian, point your AI agent at it, and you have a working *knowledge operating system* — an ARA-structured vault plus a toolbelt of skills that turn raw bookmarks into strategic plans and tracked work. **No personal areas or notes are included** — you bring your own; the scaffolding and tooling are the product. The one deliberate exception is a single **worked example** — the `standup-tools` Area — shipped on purpose as an end-to-end demo of the **Productize** workflow (below).
 
 ## ✨ Why this exists
 
@@ -60,6 +60,20 @@ Run these as slash commands in Claude Code (or via the Skill tool); Codex invoke
 - **`/audit-maintenance`** — headless cross-agent peer review that challenges and hardens newly built tools.
 - **`/security-guardrails`** — install a portable deny-list **plus** a `PreToolUse` hook that blocks shell reads of secrets, in *any* project.
 
+## 🏭 Productize — take an Area from idea to build specs
+
+Once an Area's thinking has matured, the **productize** toolkit runs it through a six-phase pipeline — from a one-line spark to a Go/No-Go decision and, if it survives, build-ready specs:
+
+`productize-new` (intake → PRD) → `productize-analyze` (16 analyses) → `productize-decide` (Go/No-Go) → `productize-build` (deliverables + roadmap) → `productize-report` (capstone HTML).
+
+It is **honest by design**: thin evidence yields low confidence, and a weak case earns a **NO-GO or PIVOT** — not a rubber stamp.
+
+**See it run end-to-end** on a real, deliberately ordinary idea — **StandupZero** ("auto-draft each developer's daily standup from their real activity"):
+
+- 📖 **Walkthrough:** [Productize showcase](vault/99-system/documentation/productize-showcase.md) — the StandupZero run, narrated phase by phase.
+- 📂 **Every artifact:** the [`standup-tools` Area](vault/02-personal/areas/standup-tools/) — PRD, 16 analyses, Go/No-Go, 13 deliverables + roadmap, plus the visual [summary report](vault/02-personal/areas/standup-tools/standupzero/07-summary.html).
+- 📘 **Reference:** [Productize documentation](vault/99-system/documentation/productize.md) — how the phases, control plan, and analysis dependency map work.
+
 ## 🚀 Quickstart
 
 1. **Use this template** (or clone the repo).
@@ -71,6 +85,7 @@ Run these as slash commands in Claude Code (or via the Skill tool); Codex invoke
 ## 📚 Documentation
 
 - **[Operating System doc](vault/99-system/documentation/second-brain-operating-system.md)** — the full philosophy, the loop, peer review, and the complete skill reference.
+- **[Productize toolkit](vault/99-system/documentation/productize.md)** — the six-phase idea → build-specs pipeline, with the [StandupZero worked example](vault/99-system/documentation/productize-showcase.md).
 - **[Vault conventions](vault/99-system/documentation/conventions.md)** — frontmatter schema, tags, titles, link-before-close.
 - **`CLAUDE.md`** — the master instruction set both agents follow (`AGENTS.md` is a symlink to it, so Codex reads the same rules).
 

@@ -50,6 +50,12 @@ Two per-Area files are checklists, not notes — they carry **no standard frontm
 - **Evergreen notes:** the title is a full-sentence claim (e.g. "Frictionless capture beats organized capture") so the `[[link]]` reads as an idea.
 - **Captures / dated notes:** kebab-case filename.
 
+## Formatting (line wrapping)
+- **One paragraph = one line.** Never hard-wrap prose at a fixed column (~80). Write each paragraph as a single continuous line and let Obsidian soft-wrap it to the window width.
+- **Why:** this vault runs with *Readable line length* **off** (and keeps it off). A single newline mid-paragraph stays a visual line break in Live Preview, so hard-wrapped text freezes at ~80 columns instead of filling the editor. (In Reading mode soft newlines collapse to spaces, masking the problem — but Live Preview, where editing happens, shows the stunted lines.)
+- **Where hard breaks are still required:** between list items, between table rows, and inside fenced ``` code blocks ```. A blank line separates blocks (paragraph ↔ heading ↔ list).
+- Applies to **every `.md` file any agent (Claude or Codex) writes or edits.** Mirrored in `CLAUDE.md` §7 so both agents load it.
+
 ## Links
 - **Link-before-close:** every note links to ≥1 other note before you finish writing it.
 - Navigate by links and backlinks, not deep folders.
