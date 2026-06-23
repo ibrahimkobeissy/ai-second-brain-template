@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StandupZero — Productization Summary</title>
+<meta name="description" content="Capstone summary of the StandupZero productization: 16 analyses, the Go/No-Go decision, and the build plan — visualized.">
+<!-- CDN libs (pinned majors); page degrades to styled tables/lists if any fail to load -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  :root{
+    --bg:#0b1020; --bg2:#0f1630; --panel:#141d3a; --panel2:#1a244a;
+    --ink:#eef2ff; --muted:#9fb0d6; --line:#26315c;
+    --go:#10b981; --cond:#f59e0b; --pivot:#8b5cf6; --nogo:#f43f5e; --slate:#64748b;
+    --accent:#38bdf8; --accent2:#818cf8;
+    --shadow:0 10px 40px rgba(0,0,0,.45);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:linear-gradient(180deg,#0b1020,#0c1226 40%,#0b1020);color:var(--ink);
+    font-family:Inter,system-ui,sans-serif;line-height:1.6;overflow-x:hidden}
+  h1,h2,h3,.display{font-family:Sora,Inter,sans-serif;letter-spacing:-.02em;line-height:1.15}
+  a{color:var(--accent)}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+  section{padding:84px 0;position:relative}
+  .eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);font-weight:600;margin:0 0 10px}
+  h2.title{font-size:clamp(1.7rem,3.6vw,2.6rem);margin:0 0 8px;font-weight:800}
+  .lead{color:var(--muted);font-size:1.05rem;max-width:760px}
+
+  /* progress + nav */
+  #progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:60;transition:width .1s}
+  nav.top{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(12px);
+    background:rgba(10,14,30,.72);border-bottom:1px solid var(--line);transform:translateY(-100%);transition:transform .35s}
+  nav.top.show{transform:translateY(0)}
+  nav.top .wrap{display:flex;align-items:center;gap:8px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+  nav.top .brand{font-family:Sora;font-weight:700;margin-right:auto}
+  nav.top a{color:var(--muted);text-decoration:none;font-size:.82rem;padding:5px 10px;border-radius:999px}
+  nav.top a:hover{color:var(--ink);background:var(--panel2)}
+
+  /* hero */
+  .hero{min-height:100vh;display:flex;align-items:center;overflow:hidden}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
+  .hero .glow{position:absolute;inset:0;background:
+     radial-gradient(60% 50% at 20% 20%,rgba(56,189,248,.18),transparent),
+     radial-gradient(50% 50% at 85% 75%,rgba(139,92,246,.22),transparent)}
+  .hero .wrap{position:relative;z-index:2}
+  .hero h1{font-size:clamp(2.6rem,7vw,5.2rem);font-weight:800;margin:.2em 0 .1em}
+  .hero .tagline{font-size:clamp(1.05rem,2.4vw,1.5rem);color:var(--muted);max-width:none}
+  .badge{display:inline-flex;align-items:center;gap:9px;padding:9px 18px;border-radius:999px;font-weight:700;
+    font-family:Sora;font-size:1rem;border:1px solid;letter-spacing:.02em}
+  .badge .dot{width:10px;height:10px;border-radius:50%}
+  .b-go{color:var(--go);border-color:var(--go);background:rgba(16,185,129,.1)} .b-go .dot{background:var(--go)}
+  .b-pivot{color:var(--pivot);border-color:var(--pivot);background:rgba(139,92,246,.12)} .b-pivot .dot{background:var(--pivot)}
+  .b-cond{color:var(--cond);border-color:var(--cond);background:rgba(245,158,11,.1)} .b-cond .dot{background:var(--cond)}
+  .b-nogo{color:var(--nogo);border-color:var(--nogo);background:rgba(244,63,94,.1)} .b-nogo .dot{background:var(--nogo)}
+  .verdict-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:26px 0}
+  .meta-chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .chip{font-size:.8rem;color:var(--muted);border:1px solid var(--line);padding:6px 12px;border-radius:999px;background:var(--panel)}
+  .override-note{margin-top:22px;border-left:3px solid var(--pivot);background:rgba(139,92,246,.08);
+    padding:14px 18px;border-radius:0 12px 12px 0;font-size:.95rem;color:#d9ddf5}
+
+  /* vital signs strip */
+  .vitals{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:34px}
+  .vital{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .vital .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .vital .v{font-family:Sora;font-weight:700;font-size:1.15rem;margin-top:6px}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* cards & grids */
+  .grid{display:grid;gap:18px}
+  .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;transition:transform .25s,border-color .25s,box-shadow .25s}
+  .card:hover{transform:translateY(-4px);border-color:#3a4a7a;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 8px;font-size:1.05rem}
+  .card p{margin:0;color:var(--muted);font-size:.94rem}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+  .chart-box{position:relative;min-height:300px}
+
+  /* verdict chips */
+  .vchip{display:inline-flex;align-items:center;gap:7px;padding:3px 11px;border-radius:999px;font-size:.78rem;font-weight:600;border:1px solid}
+  .vchip .dot{width:8px;height:8px;border-radius:50%}
+  .v-good{color:var(--go);border-color:rgba(16,185,129,.5);background:rgba(16,185,129,.08)} .v-good .dot{background:var(--go)}
+  .v-warn{color:var(--cond);border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.08)} .v-warn .dot{background:var(--cond)}
+  .v-bad{color:var(--nogo);border-color:rgba(244,63,94,.5);background:rgba(244,63,94,.08)} .v-bad .dot{background:var(--nogo)}
+  .v-neu{color:var(--accent);border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.07)} .v-neu .dot{background:var(--accent)}
+
+  /* confidence meter */
+  /* confidence = a neutral level meter (count encodes high/med/low); colour is NOT a good/bad signal */
+  .conf{display:inline-flex;gap:3px;align-items:center;vertical-align:middle}
+  .conf i{width:6px;height:12px;border-radius:2px;background:var(--line);display:inline-block}
+  .conf.high i:nth-child(-n+3){background:#9fb0d6}
+  .conf.medium i:nth-child(-n+2){background:#9fb0d6}
+  .conf.low i:nth-child(-n+1){background:#9fb0d6}
+
+  /* tables */
+  table{width:100%;border-collapse:collapse;font-size:.92rem}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+  tr:hover td{background:rgba(255,255,255,.02)}
+
+  /* SWOT */
+  .swot{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .quad{border-radius:var(--radius);padding:20px;border:1px solid}
+  .quad h3{margin:0 0 12px;display:flex;align-items:center;gap:10px;font-size:1.05rem}
+  .quad ul{margin:0;padding-left:18px;color:#dfe5fb;font-size:.9rem} .quad li{margin-bottom:7px}
+  .q-s{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.35)}
+  .q-w{background:rgba(244,63,94,.07);border-color:rgba(244,63,94,.35)}
+  .q-o{background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.35)}
+  .q-t{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.35)}
+  .tag{font-size:.62rem;padding:2px 7px;border-radius:6px;background:var(--panel2);color:var(--muted);font-weight:700;letter-spacing:.08em}
+
+  /* stat / count-up */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .stat{text-align:center;padding:22px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
+  .stat .num{font-family:Sora;font-weight:800;font-size:2.2rem;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .lbl{color:var(--muted);font-size:.85rem;margin-top:4px}
+  .scenario-cons .num{background:linear-gradient(90deg,#fb7185,#f43f5e)}
+  .scenario-base .num{background:linear-gradient(90deg,#fbbf24,#f59e0b)}
+  .scenario-opt .num{background:linear-gradient(90deg,#34d399,#10b981)}
+  .scenario-cons,.scenario-base,.scenario-opt{ -webkit-text-fill-color:initial }
+
+  /* gauge */
+  .gauge-wrap{display:flex;align-items:center;gap:30px;flex-wrap:wrap}
+  .gauge{position:relative;width:220px;height:220px}
+  .gauge .score{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .gauge .score b{font-family:Sora;font-size:2.6rem;font-weight:800}
+  .gauge .score span{color:var(--muted);font-size:.8rem}
+
+  /* callout */
+  .callout{border-left:3px solid var(--accent);background:rgba(56,189,248,.06);padding:14px 18px;border-radius:0 12px 12px 0;margin:14px 0;font-size:.95rem}
+  .callout.bad{border-color:var(--nogo);background:rgba(244,63,94,.06)}
+  .callout.good{border-color:var(--go);background:rgba(16,185,129,.06)}
+  .callout.warn{border-color:var(--cond);background:rgba(245,158,11,.06)}
+
+  /* custom roadmap timeline (replaces Mermaid gantt — clearer + fully controlled) */
+  .timeline{margin-top:14px;overflow-x:auto}
+  .tl-inner{min-width:680px}
+  .tl-axis{display:grid;grid-template-columns:repeat(12,1fr);margin-left:180px;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:14px}
+  .tl-axis span{font-size:.7rem;color:var(--muted)}
+  .tl-row{display:grid;grid-template-columns:180px 1fr;align-items:center;margin:12px 0}
+  .tl-label b{display:block;font-size:.9rem}
+  .tl-label span{display:block;font-size:.74rem;color:var(--muted);padding-right:14px}
+  .tl-track{position:relative;height:34px;border-radius:9px;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0,rgba(255,255,255,.03) 1px,transparent 1px,transparent calc(100%/12))}
+  .tl-bar{position:absolute;top:4px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+    font-size:.72rem;font-weight:700;color:#06121f;box-shadow:0 3px 12px rgba(0,0,0,.35);white-space:nowrap;overflow:hidden}
+  .b-r0{background:linear-gradient(90deg,#fb7185,#f43f5e);color:#fff}
+  .b-r1{background:linear-gradient(90deg,#7dd3fc,#38bdf8)}
+  .b-r2{background:linear-gradient(90deg,#fcd34d,#f59e0b)}
+  .b-r3{background:linear-gradient(90deg,#c4b5fd,#8b5cf6);color:#fff}
+  .tl-gate{position:absolute;top:-3px;bottom:-3px;width:0;border-left:2px dashed rgba(255,255,255,.45)}
+  .tl-gate b{position:absolute;top:-20px;left:50%;transform:translateX(-50%);white-space:nowrap;
+    font-size:.62rem;color:#fbcfe8;background:rgba(244,63,94,.18);border:1px solid rgba(244,63,94,.5);
+    padding:1px 7px;border-radius:999px;font-weight:700}
+  .tl-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px;font-size:.75rem;color:var(--muted)}
+  .tl-legend span{display:inline-flex;align-items:center;gap:6px}
+  .tl-legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+  footer{padding:50px 0;color:var(--muted);font-size:.85rem;text-align:center;border-top:1px solid var(--line)}
+  .pill-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .seg-card{background:var(--panel2)}
+  .small{font-size:.82rem;color:var(--muted)}
+  @media(max-width:860px){.g2,.g3,.swot,.vitals,.stats{grid-template-columns:1fr}.vitals{grid-template-columns:1fr 1fr}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<nav class="top" id="topnav"><div class="wrap">
+  <span class="brand">StandupZero</span>
+  <a href="#exec">Summary</a><a href="#product">Product</a><a href="#market">Market</a>
+  <a href="#compete">Competition</a><a href="#engine">Analyses</a><a href="#swot">SWOT</a>
+  <a href="#fin">Financials</a><a href="#risk">Risk</a><a href="#decision">Decision</a>
+  <a href="#build">Build</a><a href="#index">Artifacts</a>
+</div></nav>
+
+<!-- ───────────── HERO ───────────── -->
+<header class="hero" id="top">
+  <canvas id="heroCanvas"></canvas>
+  <div class="glow"></div>
+  <div class="wrap">
+    <p class="eyebrow">Productization Summary · Depth 3 · Investment-grade</p>
+    <h1>StandupZero</h1>
+    <p class="tagline">Auto-drafts each developer's daily standup from their real activity — commits, PRs, tickets, calendar — so the async status update writes itself.</p>
+    <div class="verdict-row">
+      <span class="badge b-go"><span class="dot"></span>Decision: GO</span>
+      <span class="small">overriding →</span>
+      <span class="badge b-pivot"><span class="dot"></span>Analysis: PIVOT · high confidence</span>
+    </div>
+    <div class="override-note">
+      <b>Founder override, recorded honestly.</b> The analysis engine recommended <b>PIVOT</b> (weighted 2.30/5) — the auto-draft wedge is already shipping (Kollabe, ZeroStandup) and there's no distribution edge for a solo founder. The founder elected to proceed <b>GO</b> head-on; this summary leads with that truth rather than hiding the verdict. The accepted risks are carried through to the build plan, which is validation-gated.
+    </div>
+    <div class="vitals">
+      <div class="vital"><div class="k">Market</div><div class="v" style="color:var(--cond)">Moderate</div></div>
+      <div class="vital"><div class="k">Competition</div><div class="v" style="color:var(--nogo)">Crowded</div></div>
+      <div class="vital"><div class="k">Feasibility</div><div class="v" style="color:var(--nogo)">Risky</div></div>
+      <div class="vital"><div class="k">Decision</div><div class="v" style="color:var(--go)">GO*</div></div>
+      <div class="vital"><div class="k">Analyses run</div><div class="v" style="color:var(--accent)">16</div></div>
+    </div>
+    <div class="meta-chips">
+      <span class="chip">📁 standup-tools / standupzero</span>
+      <span class="chip">🗓️ 2026-06-22</span>
+      <span class="chip">🧩 16 analyses · 13 deliverables + roadmap</span>
+      <span class="chip">⚙️ B2B SaaS · per-seat · solo founder</span>
+    </div>
+  </div>
+</header>
+
+<!-- ───────────── EXEC SUMMARY ───────────── -->
+<section id="exec">
+  <div class="wrap reveal">
+    <p class="eyebrow">Executive Summary</p>
+    <h2 class="title">Trivially buildable, strategically unwinnable as specified</h2>
+    <p class="lead">The 16 analyses converge hard: StandupZero is easy to build and cheap to run — and that's exactly the problem. The differentiating wedge (auto-draft from activity) is already shipping, so differentiation lands at <b>parity</b>, the USP is <b>vague</b>, and feasibility caps at <b>risky</b>. Layered on a solo, unfunded, no-distribution founder, the risk profile reaches a dealbreaker. The analytical call is PIVOT; the founder is proceeding GO with eyes open.</p>
+    <div class="grid g3" style="margin-top:26px">
+      <div class="card"><h3>🔍 The wedge already ships</h3><p>Kollabe drafts standups from GitHub PRs + Jira + calendar; ZeroStandup does activity aggregation (and collides on the name). Geekbot can copy it cheaply.</p></div>
+      <div class="card"><h3>💸 Cost isn't the risk</h3><p>The PRD's COGS fear is overstated — a cheap model on metadata is ~3–5% of revenue. The binding constraint is <b>customer acquisition</b>, not unit cost.</p></div>
+      <div class="card"><h3>🧭 One honest path</h3><p>If proceeding, the only defensible angle is privacy-first / self-hosted auto-draft — and any GO should be gated on a draft-quality spike first.</p></div>
+    </div>
+  </div>
+</section>
+<div class="wrap"><div class="section-divider"></div></div>
+
+<!-- ───────────── PRODUCT ───────────── -->
+<section id="product">
+  <div class="wrap reveal">
+    <p class="eyebrow">The Product · from the PRD</p>
+    <h2 class="title">What StandupZero is</h2>
+    <div class="grid g3" style="margin-top:10px">
+      <div class="card"><h3>🩹 Problem</h3><p>Daily status is paid for twice: the synchronous standup taxes every engineer, and async bots still make them <i>write</i> the update from memory — so it's skipped, rushed, or low-trust.</p></div>
+      <div class="card"><h3>✨ Solution</h3><p>Compose each engineer's "yesterday / today / blockers" <i>for</i> them from real activity; review-and-post to Slack in seconds. Metadata only — code is never stored.</p></div>
+      <div class="card"><h3>🎯 Positioning</h3><p>Unlike check-in bots that <i>ask</i> engineers to type an update, StandupZero <b>drafts it from the work itself</b> — so it gets done and it's grounded in what actually happened.</p></div>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="panel">
+        <h3 style="margin-top:0">Target segments</h3>
+        <p class="small">Hypotheses to validate — primary beachhead first.</p>
+        <div class="pill-list">
+          <span class="chip">🌍 Remote / async-first teams <b>(beachhead)</b></span>
+          <span class="chip">🏢 Mid-market eng (30–250)</span>
+          <span class="chip">🚀 Startups 5–30 (freemium funnel)</span>
+        </div>
+        <h3 style="margin-top:20px">Revenue model</h3>
+        <p>Per-active-seat subscription, ~$3–6/dev/mo (hypothesis, anchored to incumbents). Free tier under ~10 seats as the acquisition engine.</p>
+      </div>
+      <div class="panel">
+        <h3 style="margin-top:0">Vision scenarios</h3>
+        <div class="callout warn"><b>Conservative</b> — draft quality mediocre → no better than Geekbot → niche only.</div>
+        <div class="callout"><b>Base</b> — good for routine days; solid wedge in async-first teams; modest revenue.</div>
+        <div class="callout good"><b>Optimistic</b> — drafts trusted, one-tap posting; rollup becomes the hook; displaces check-in bots.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="wrap"><div class="section-divider"></div></div>
+
+<!-- ───────────── MARKET ───────────── -->
+<section id="market">
+  <div class="wrap reveal">
+    <p class="eyebrow">Market &amp; Opportunity · <span class="vchip v-warn"><span class="dot"></span>moderate</span> <span class="conf medium"><i></i><i></i><i></i></span></p>
+    <h2 class="title">Real category, small obtainable slice</h2>
+    <div class="grid g2" style="margin-top:10px">
+      <div class="panel chart-box"><canvas id="marketFunnel"></canvas></div>
+      <div class="panel">
+        <h3 style="margin-top:0">Sizing (derived)</h3>
+        <table>
+          <tr><th>Layer</th><th>Estimate</th><th>Basis</th></tr>
+          <tr><td><b>TAM</b></td><td>~$0.41B/yr</td><td>8.6M tooled devs × $4 × 12</td></tr>
+          <tr><td><b>SAM</b></td><td>~$80–120M/yr</td><td>English-first, marketplace-reachable</td></tr>
+          <tr><td><b>SOM</b> (3-yr, solo)</td><td>~$50–150K ARR</td><td>0.1% of SAM, optimistic</td></tr>
+        </table>
+        <div class="callout">Demand is real and proven (multiple paid vendors) but <b>mature and cheap</b>; the founder-obtainable slice is side-income scale. Trend: growing but commoditizing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="wrap"><div class="section-divider"></div></div>
+
+<!-- ───────────── COMPETITION ───────────── -->
+<section id="compete">
+  <div class="wrap reveal">
+    <p class="eyebrow">Competitive Landscape · <span class="vchip v-bad"><span class="dot"></span>crowded</span> <span class="conf high"><i></i><i></i><i></i></span></p>
+    <h2 class="title">The wedge is already occupied</h2>
+    <div class="grid g2">
+      <div class="panel chart-box"><canvas id="posMap"></canvas>
+        <p class="small" style="margin-top:10px">Positioning map — auto-draft capability (x) vs distribution/brand (y). StandupZero would enter behind on both axes.</p>
+      </div>
+      <div class="panel">
+        <table>
+          <tr><th>Player</th><th>Auto-draft?</th><th>Wedge / weakness</th></tr>
+          <tr><td>Geekbot</td><td><span class="vchip v-bad"><span class="dot"></span>no</span></td><td>Leader, free tier, distribution — only <i>analyzes</i> updates</td></tr>
+          <tr><td><b>Kollabe</b></td><td><span class="vchip v-good"><span class="dot"></span>yes</span></td><td>GitHub+Jira+cal → AI draft via MCP — <b>same positioning</b></td></tr>
+          <tr><td><b>ZeroStandup</b></td><td><span class="vchip v-good"><span class="dot"></span>yes</span></td><td>Activity aggregation — near-identical concept <b>+ name collision</b></td></tr>
+          <tr><td>Standuply / DailyBot</td><td><span class="vchip v-bad"><span class="dot"></span>no</span></td><td>Prompt-to-type; broad agile features</td></tr>
+        </table>
+        <div class="callout bad"><b>Defensible gap: largely absent.</b> ≥3 players already ship the wedge; build barriers are near-zero (OSS + MCP + LLM APIs).</div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="wrap"><div class="section-divider"></div></div>
+
+<!-- ───────────── ANALYSIS ENGINE ───────────── -->
+<section id="engine">
+  <div class="wrap reveal">
+    <p class="eyebrow">The Analysis Engine · 16 analyses · knowledge-graph linked</p>
+    <h2 class="title">Every lens, every verdict</h2>
+    <div class="panel">
+      <h3 style="margin-top:0">Verdict matrix — all 16 analyses</h3>
+      <table id="verdictTable"><thead><tr><th>#</th><th>Analysis</th><th>Verdict</th><th>Conf.</th><th>Key finding</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="grid g3" style="margin-top:18px">
+      <div class="panel chart-box" style="min-height:260px"><canvas id="verdictDonut"></canvas></div>
+      <div class="card"><h3>🏆 Key finding · differentiation</h3><p>Auto-draft is matched by Kollabe &amp; ZeroStandup and copyable by Geekbot — <b>parity</b>, lead duration ≈ 0.</p></div>
+      <div class="card"><h3>🧪 Key finding · validation</h3><p>Untested. The riskiest assumption (draft quality, ★A2) needs a 2-week spike: ≥70% posted with minor edits = proceed, &lt;50% = stop.</p></div>
+    </div>
+  </div>
+</section>
+<div class="wrap"><div class="section-divider"></div></div>
+
+<!-- ───────────── SWOT ───────────── -->
+<section id="swot">
+  <div class="wrap reveal">
+    <p class="eyebrow">SWOT · <span class="vchip v-bad"><span class="dot"></span>exposed</span> <span class="conf high"><i></i><i></i><i></i></span></p>
+    <h2 class="title">Generic strengths against structural threats</h2>
+    <div class="swot" style="margin-top:10px">
+      <div class="quad q-s"><h3>💪 Strengths <span class="tag">INTERNAL +</span></h3><ul>
+        <li>Founder is a developer — can build v1 cheaply and dogfood</li>
+        <li>Solo agility — can move on a narrow niche without committee</li></ul></div>
+      <div class="quad q-w"><h3>⚠️ Weaknesses <span class="tag">INTERNAL −</span></h3><ul>
+        <li>Solo, part-time, no funding, <b>no distribution</b>, no brand</li>
+        <li>Idea-stage, unvalidated; v1 is a feature subset</li></ul></div>
+      <div class="quad q-o"><h3>🌅 Opportunities <span class="tag">EXTERNAL +</span></h3><ul>
+        <li>Durable remote/async-work shift raises the need</li>
+        <li><b>Unserved privacy-first / self-host niche</b> — the one real opening</li></ul></div>
+      <div class="quad q-t"><h3>🌩️ Threats <span class="tag">EXTERNAL −</span></h3><ul>
+        <li>Wedge already shipped (Kollabe, ZeroStandup); commoditizing</li>
+        <li>Geekbot's distribution; platform-native risk; name collision</li></ul></div>
+    </div>
+    <div class="callout bad" style="margin-top:16px"><b>Decisive cross-read (W×T):</b> no distribution × rivals already own the wedge = nothing to defend with. This is why the verdict is <i>exposed</i>, not balanced.</div>
+  </div>
+</section>
+<div class="wrap"><div class="section-divider"></div></div>
+
+<!-- ───────────── FINANCIALS ───────────── -->
+<section id="fin">
+  <div class="wrap reveal">
+    <p class="eyebrow">Financials · <span class="vchip v-warn"><span class="dot"></span>fragile</span> <span class="conf medium"><i></i><i></i><i></i></span></p>
+    <h2 class="title">Costs fine, ceiling low</h2>
+    <div class="stats" style="margin-top:10px">
+      <div class="stat scenario-cons"><div class="num" data-count="7">$0K</div><div class="lbl">Conservative ARR (3-yr) · ~150 seats</div></div>
+      <div class="stat scenario-base"><div class="num" data-count="29">$0K</div><div class="lbl">Base ARR · ~600 seats</div></div>
+      <div class="stat scenario-opt"><div class="num" data-count="120">$0K</div><div class="lbl">Optimistic ARR · ~2,500 seats</div></div>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="panel chart-box"><canvas id="finChart"></canvas></div>
+      <div class="panel">
+        <h3 style="margin-top:0">Unit economics</h3>
+        <table>
+          <tr><th>Metric</th><th>Value</th></tr>
+          <tr><td>Price</td><td>~$4 / active seat / mo</td></tr>
+          <tr><td>COGS (cheap model, metadata)</td><td>~$0.11–0.22 (≈3–5%)</td></tr>
+          <tr><td>Gross margin</td><td>~95%</td></tr>
+          <tr><td>Binding constraint</td><td><b>Customer acquisition</b>, not cost</td></tr>
+        </table>
+        <div class="callout good"><b>PRD correction:</b> the headline COGS fear is overstated. Cost only bites under a premium model + whole-repo context.</div>
+        <div class="callout warn">All three scenarios sit inside SOM (~$50–150K). Realistic outcome: <b>profitable side-income, not a venture.</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="wrap"><div class="section-divider"></div></div>
+
+<!-- ───────────── RISK ───────────── -->
+<section id="risk">
+  <div class="wrap reveal">
+    <p class="eyebrow">Risk Register · <span class="vchip v-bad"><span class="dot"></span>high — dealbreaker present</span> <span class="conf high"><i></i><i></i><i></i></span></p>
+    <h2 class="title">Likelihood × impact</h2>
+    <div class="grid g2" style="align-items:start">
+      <div class="panel chart-box"><canvas id="riskChart"></canvas></div>
+      <div class="panel">
+        <table>
+          <tr><th>Risk</th><th>L×I</th><th>Note</th></tr>
+          <tr><td><b>R1</b> Differentiation gone</td><td><span class="vchip v-bad"><span class="dot"></span>H×H</span></td><td>Realized — parity, crowded</td></tr>
+          <tr><td><b>R2</b> No distribution</td><td><span class="vchip v-bad"><span class="dot"></span>H×H</span></td><td>Solo vs funded incumbents</td></tr>
+          <tr><td>R3 Draft quality</td><td><span class="vchip v-warn"><span class="dot"></span>M×H</span></td><td>Untested — the spike</td></tr>
+          <tr><td>R4 Trust in machine status</td><td><span class="vchip v-warn"><span class="dot"></span>M×H</span></td><td>Cultural acceptance</td></tr>
+          <tr><td>R6 Trademark collision</td><td><span class="vchip v-warn"><span class="dot"></span>M×M</span></td><td>"ZeroStandup"</td></tr>
+        </table>
+        <div class="callout bad"><b>R1 + R2 are concurrently High×High and already materializing</b> — no mitigation preserves the current plan, only a pivot. That's the dealbreaker.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="wrap"><div class="section-divider"></div></div>
+
+<!-- ───────────── DECISION ───────────── -->
+<section id="decision">
+  <div class="wrap reveal">
+    <p class="eyebrow">The Decision · scorecard 2.30 / 5</p>
+    <h2 class="title">Analytical PIVOT — overridden to GO</h2>
+    <div class="grid g2" style="align-items:center">
+      <div class="panel chart-box"><canvas id="scorecard"></canvas></div>
+      <div class="panel">
+        <div class="gauge-wrap">
+          <div class="gauge"><canvas id="gauge" width="220" height="220"></canvas>
+            <div class="score"><b id="gaugeNum">2.30</b><span>weighted / 5</span></div></div>
+          <div style="flex:1;min-width:180px">
+            <table>
+              <tr><th>Dimension</th><th>Score</th><th>Wt</th></tr>
+              <tr><td>Market demand</td><td>3</td><td>20%</td></tr>
+              <tr><td>Competition / diff.</td><td>2</td><td>30%</td></tr>
+              <tr><td>Financial viability</td><td>2</td><td>15%</td></tr>
+              <tr><td>Legal / regulatory</td><td>3</td><td>10%</td></tr>
+              <tr><td>Team / feasibility</td><td>2</td><td>25%</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="callout"><b>Sensitivity:</b> the call is driven by Competition (wt 30%, score 2). Even a perfect market score only reaches ~2.7/5 — the recommendation is robust.</div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:18px;border-color:rgba(139,92,246,.4)">
+      <h3 style="margin-top:0">⚑ Founder override — GO over PIVOT (2026-06-22)</h3>
+      <p>The decision is the founder's to make. They elected to proceed head-on with the original PRD. Recorded honestly: <code>recommendation: GO</code> over an intact <code>analytical_recommendation: PIVOT</code> (high confidence), with the accepted risks listed below. The analysis was <b>not</b> rewritten.</p>
+      <div class="pill-list">
+        <span class="chip" style="border-color:rgba(244,63,94,.4)">✗ No differentiation</span>
+        <span class="chip" style="border-color:rgba(244,63,94,.4)">✗ No distribution</span>
+        <span class="chip" style="border-color:rgba(245,158,11,.4)">~ Side-income ceiling</span>
+        <span class="chip" style="border-color:rgba(245,158,11,.4)">~ Name collision unresolved</span>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="wrap"><div class="section-divider"></div></div>
+
+<!-- ───────────── BUILD ───────────── -->
+<section id="build">
+  <div class="wrap reveal">
+    <p class="eyebrow">Build Plan · 13 deliverables + roadmap · validation-gated</p>
+    <h2 class="title">If proceeding, prove the risky bits first</h2>
+    <div class="grid g2" style="margin-bottom:18px">
+      <div class="card seg-card"><h3>🅰️ Product track (7)</h3><p>business-model · pricing · functional-spec · gtm-strategy · marketing · customer-journey · kpi-framework</p></div>
+      <div class="card seg-card"><h3>🅱️ Technical track (6)</h3><p>adr · technical-spec · spec-generation · uiux-mockup · data-model · devops</p></div>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0">Roadmap — gated phases <span class="small">(Jul 2026 → Jun 2027)</span></h3>
+      <div class="timeline"><div class="tl-inner">
+        <div class="tl-axis">
+          <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+          <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+        </div>
+        <div class="tl-row">
+          <div class="tl-label"><b>R0 · Validate</b><span>OSS CLI + draft-quality spike</span></div>
+          <div class="tl-track">
+            <div class="tl-bar b-r0" style="left:0;width:13%">spike</div>
+            <div class="tl-gate" style="left:13%"><b>🚦 G0 · DAR ≥70%</b></div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-label"><b>R1 · MVP &amp; soft launch</b><span>GitHub→draft→Slack + funnel</span></div>
+          <div class="tl-track">
+            <div class="tl-bar b-r1" style="left:13%;width:22%">MVP</div>
+            <div class="tl-gate" style="left:35%"><b>🚦 G1 · funnel works</b></div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-label"><b>R2 · Expand &amp; monetize</b><span>Team tier · multi-tracker · referral</span></div>
+          <div class="tl-track">
+            <div class="tl-bar b-r2" style="left:35%;width:31%">Expand</div>
+            <div class="tl-gate" style="left:66%"><b>🚦 G2 · unit economics</b></div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-label"><b>R3 · Mid-market &amp; rollup</b><span>Business tier · rollup · SOC2</span></div>
+          <div class="tl-track">
+            <div class="tl-bar b-r3" style="left:66%;width:34%">Mid-market</div>
+          </div>
+        </div>
+        <div class="tl-legend">
+          <span><i class="b-r0"></i>R0 validate</span><span><i class="b-r1"></i>R1 MVP</span>
+          <span><i class="b-r2"></i>R2 expand</span><span><i class="b-r3"></i>R3 mid-market</span>
+          <span>🚦 = phase gate (must clear to proceed)</span>
+        </div>
+      </div></div>
+      <div class="callout warn"><b>Validation-gated by design:</b> R0 (the draft-quality spike, gate DAR ≥70%) runs <i>before</i> any significant build — so the override fails fast and cheap if the analysis was right.</div>
+    </div>
+  </div>
+</section>
+<div class="wrap"><div class="section-divider"></div></div>
+
+<!-- ───────────── ARTIFACT INDEX ───────────── -->
+<section id="index">
+  <div class="wrap reveal">
+    <p class="eyebrow">Artifact Index · traceability</p>
+    <h2 class="title">Every source on disk</h2>
+    <div class="grid g3">
+      <div class="card"><h3>Control &amp; Phase 1</h3><p class="small">
+        <a href="standupzero.md">standupzero.md</a><br>
+        <a href="00-productization-plan.md">00-productization-plan.md</a><br>
+        <a href="01-product-intake.md">01-product-intake.md</a><br>
+        <a href="02-prd.md">02-prd.md</a>
+      </p></div>
+      <div class="card"><h3>Phase 2–4 · analyses</h3><p class="small">
+        <a href="03-analyses/01-market-study.md">01-market-study.md</a><br>
+        <a href="03-analyses/02-competitive-landscape.md">02-competitive-landscape.md</a><br>
+        <a href="03-analyses/03-customer-discovery.md">03-customer-discovery.md</a><br>
+        <a href="03-analyses/04-industry-analysis.md">04-industry-analysis.md</a><br>
+        <a href="03-analyses/05-legal-scan.md">05-legal-scan.md</a><br>
+        <a href="03-analyses/06-feasibility.md">06-feasibility.md</a><br>
+        <a href="03-analyses/07-financial-model.md">07-financial-model.md</a><br>
+        <a href="03-analyses/08-value-proposition.md">08-value-proposition.md</a><br>
+        <a href="03-analyses/09-benchmarking.md">09-benchmarking.md</a><br>
+        <a href="03-analyses/10-competitive-differentiation.md">10-competitive-differentiation.md</a><br>
+        <a href="03-analyses/11-feature-gap.md">11-feature-gap.md</a><br>
+        <a href="03-analyses/12-blue-ocean.md">12-blue-ocean.md</a><br>
+        <a href="03-analyses/13-idea-validation.md">13-idea-validation.md</a><br>
+        <a href="03-analyses/14-swot.md">14-swot.md</a><br>
+        <a href="03-analyses/15-risk-assessment.md">15-risk-assessment.md</a><br>
+        <a href="03-analyses/16-usp.md">16-usp.md</a><br>
+        <a href="04-report.md">04-report.md</a>
+      </p></div>
+      <div class="card"><h3>Phase 5–6 · build specs</h3><p class="small">
+        <a href="05-go-no-go.md">05-go-no-go.md</a><br>
+        <a href="06-deliverables/01-business-model-design.md">01-business-model-design.md</a><br>
+        <a href="06-deliverables/02-functional-spec.md">02-functional-spec.md</a><br>
+        <a href="06-deliverables/03-customer-journey.md">03-customer-journey.md</a><br>
+        <a href="06-deliverables/04-pricing-strategy.md">04-pricing-strategy.md</a><br>
+        <a href="06-deliverables/05-kpi-framework.md">05-kpi-framework.md</a><br>
+        <a href="06-deliverables/06-adr.md">06-adr.md</a><br>
+        <a href="06-deliverables/07-gtm-strategy.md">07-gtm-strategy.md</a><br>
+        <a href="06-deliverables/08-technical-spec.md">08-technical-spec.md</a><br>
+        <a href="06-deliverables/09-uiux-mockup.md">09-uiux-mockup.md</a><br>
+        <a href="06-deliverables/10-marketing-strategy.md">10-marketing-strategy.md</a><br>
+        <a href="06-deliverables/11-spec-generation.md">11-spec-generation.md</a><br>
+        <a href="06-deliverables/12-data-model.md">12-data-model.md</a><br>
+        <a href="06-deliverables/13-devops.md">13-devops.md</a><br>
+        <a href="06-deliverables/14-roadmap.md">14-roadmap.md</a><br>
+        <a href="07-summary.html">07-summary.html</a>
+      </p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Generated by <b>/productize:report</b> — the second-brain productize toolkit. A truthful summary, not a pitch deck.</p>
+    <p class="small">StandupZero · depth 3 · 2026-06-22.</p>
+  </div>
+</footer>
+
+<script>
+/* ---------- data (verbatim from the artifacts) ---------- */
+const VERDICTS=[
+ ["01","market-study","moderate","medium","warn","Real category but mature &amp; cheap; SOM ~$50–150K — side-income scale."],
+ ["02","competitive-landscape","crowded","high","bad","Wedge already shipping (Kollabe, ZeroStandup); the leader can copy it cheaply."],
+ ["03","customer-discovery","partial","low","neu","Sharp ICP hypothesis (async-first lead already paying for a bot) — unvalidated."],
+ ["04","industry-analysis","mixed → hostile","high","bad","Low entry barriers + high buyer power; the LLM tailwind is symmetric."],
+ ["05","legal-scan","watch-items","medium","warn","Trademark collision (ZeroStandup) + GDPR sub-processor; no hard blocker."],
+ ["06","feasibility","risky","high","bad","Buildable, not winnable — the wedge is taken and there's no distribution."],
+ ["07","financial-model","fragile","medium","warn","Costs fine (~3–5%); the ceiling is low; acquisition is the binding constraint."],
+ ["08","value-proposition","moderate","medium","warn","Real value but non-exclusive — compelling, not unique."],
+ ["09","benchmarking","cautionary","medium","warn","Winners won on distribution; thin single-feature wedges get out-evolved."],
+ ["10","competitive-differentiation","parity","high","bad","Auto-draft is matched &amp; copyable — lead duration ≈ 0."],
+ ["11","feature-gap","behind","high","bad","Launches a subset; the wedge is now table-stakes among the rivals."],
+ ["12","blue-ocean","niche","medium","neu","One uncontested axis: privacy-first / self-host — narrow, and a pivot."],
+ ["13","idea-validation","untested","medium","neu","Riskiest = draft quality; spike gate DAR ≥70% = proceed, &lt;50% = stop."],
+ ["14","swot","exposed","high","bad","Generic strengths vs structural threats; W×T = nothing to defend with."],
+ ["15","risk-assessment","high","high","bad","R1 (no diff) + R2 (no distribution) both High×High = dealbreaker."],
+ ["16","usp","vague","high","bad","No defensible USP as specified; a sharp one needs the privacy pivot."]
+];
+const CSS=getComputedStyle(document.documentElement);
+const C={go:CSS.getPropertyValue('--go').trim()||'#10b981',cond:CSS.getPropertyValue('--cond').trim()||'#f59e0b',
+  pivot:CSS.getPropertyValue('--pivot').trim()||'#8b5cf6',nogo:CSS.getPropertyValue('--nogo').trim()||'#f43f5e',
+  accent:CSS.getPropertyValue('--accent').trim()||'#38bdf8',accent2:'#818cf8',muted:'#9fb0d6',line:'#26315c'};
+const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ---------- verdict matrix table ---------- */
+(function(){
+  const tb=document.querySelector('#verdictTable tbody');
+  const map={good:'v-good',warn:'v-warn',bad:'v-bad',neu:'v-neu'};
+  VERDICTS.forEach(([n,id,v,c,k,finding])=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${n}</td><td><b>${id}</b></td>
+      <td><span class="vchip ${map[k]}"><span class="dot"></span>${v}</span></td>
+      <td><span class="conf ${c}" title="${c} confidence"><i></i><i></i><i></i></span></td>
+      <td class="small">${finding||''}</td>`;
+    tb.appendChild(tr);
+  });
+})();
+
+/* ---------- scroll progress + sticky nav + reveal ---------- */
+const prog=document.getElementById('progress'),nav=document.getElementById('topnav');
+addEventListener('scroll',()=>{
+  const h=document.documentElement,sc=h.scrollTop/(h.scrollHeight-h.clientHeight);
+  prog.style.width=(sc*100)+'%';
+  nav.classList.toggle('show',h.scrollTop>640);
+});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ---------- count-up ---------- */
+function countUp(el){
+  const target=+el.dataset.count, dur=1400, t0=performance.now(), pre=el.textContent.replace(/[0-9]/g,'').charAt(0)||'$';
+  function step(t){const p=Math.min(1,(t-t0)/dur);const val=Math.round(target*(1-Math.pow(1-p,3)));
+    el.textContent='$'+val+'K';if(p<1)requestAnimationFrame(step);}
+  if(reduce){el.textContent='$'+target+'K';}else requestAnimationFrame(step);
+}
+const cio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){countUp(e.target);cio.unobserve(e.target)}}),{threshold:.5});
+document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
+
+/* ---------- hero particle canvas ---------- */
+(function(){
+  const cv=document.getElementById('heroCanvas');if(!cv)return;const ctx=cv.getContext('2d');
+  let w,h,pts;function rs(){w=cv.width=cv.offsetWidth;h=cv.height=cv.offsetHeight;
+    pts=Array.from({length:Math.min(70,Math.floor(w/22))},()=>({x:Math.random()*w,y:Math.random()*h,
+      vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4}));}
+  rs();addEventListener('resize',rs);
+  function draw(){ctx.clearRect(0,0,w,h);
+    for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;}
+    for(let i=0;i<pts.length;i++){for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.hypot(dx,dy);
+      if(d<120){ctx.strokeStyle='rgba(56,189,248,'+(1-d/120)*.22+')';ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}}}
+    for(const p of pts){ctx.fillStyle='rgba(129,140,248,.7)';ctx.beginPath();ctx.arc(p.x,p.y,1.8,0,7);ctx.fill();}
+    if(!reduce)requestAnimationFrame(draw);}
+  draw();
+})();
+
+/* ---------- Chart.js charts (guarded; tables already show data if it fails) ---------- */
+function charts(){
+  if(typeof Chart==='undefined')return;
+  Chart.defaults.color=C.muted;Chart.defaults.font.family='Inter';Chart.defaults.borderColor=C.line;
+
+  // market funnel (horizontal bars TAM/SAM/SOM)
+  new Chart(document.getElementById('marketFunnel'),{type:'bar',
+    data:{labels:['TAM ~$410M','SAM ~$100M','SOM ~$100K'],datasets:[{data:[410,100,0.12],
+      backgroundColor:[C.accent,C.accent2,C.cond],borderRadius:8}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false},title:{display:true,text:'Market sizing ($M/yr, log)',color:C.muted}},
+      scales:{x:{type:'logarithmic',grid:{color:C.line}},y:{grid:{display:false}}}}});
+
+  // positioning map (scatter)
+  new Chart(document.getElementById('posMap'),{type:'scatter',
+    data:{datasets:[
+      {label:'StandupZero (planned)',data:[{x:7,y:1.5}],backgroundColor:C.accent,pointRadius:9,pointStyle:'rectRot'},
+      {label:'Kollabe',data:[{x:8,y:4}],backgroundColor:C.nogo,pointRadius:8},
+      {label:'ZeroStandup',data:[{x:7.5,y:3.5}],backgroundColor:C.nogo,pointRadius:8},
+      {label:'Geekbot',data:[{x:2,y:9}],backgroundColor:C.cond,pointRadius:8},
+      {label:'Standuply/DailyBot',data:[{x:2.5,y:6}],backgroundColor:C.muted,pointRadius:7}]},
+    options:{plugins:{legend:{position:'bottom',labels:{boxWidth:10}}},
+      scales:{x:{title:{display:true,text:'Auto-draft capability →'},min:0,max:10,grid:{color:C.line}},
+              y:{title:{display:true,text:'Distribution / brand →'},min:0,max:10,grid:{color:C.line}}}}});
+
+  // verdict donut
+  const counts={bad:0,warn:0,neu:0,good:0};VERDICTS.forEach(v=>counts[v[4]]++);
+  new Chart(document.getElementById('verdictDonut'),{type:'doughnut',
+    data:{labels:['Negative','Caution','Neutral/untested','Positive'],
+      datasets:[{data:[counts.bad,counts.warn,counts.neu,counts.good],
+      backgroundColor:[C.nogo,C.cond,C.accent,C.go],borderColor:'#0b1020',borderWidth:3}]},
+    options:{cutout:'62%',plugins:{legend:{position:'bottom',labels:{boxWidth:10}},
+      title:{display:true,text:'16 verdicts',color:C.muted}}}});
+
+  // financial scenarios
+  new Chart(document.getElementById('finChart'),{type:'bar',
+    data:{labels:['Conservative','Base','Optimistic'],datasets:[
+      {label:'ARR ($K, 3-yr)',data:[7,29,120],backgroundColor:[C.nogo,C.cond,C.go],borderRadius:8}]},
+    options:{plugins:{legend:{display:false},title:{display:true,text:'3-year ARR scenarios (inside SOM ceiling)',color:C.muted}},
+      scales:{y:{grid:{color:C.line},title:{display:true,text:'$K ARR'}},x:{grid:{display:false}}}}});
+
+  // risk likelihood×impact bubble
+  new Chart(document.getElementById('riskChart'),{type:'bubble',
+    data:{datasets:[
+      {label:'R1 Differentiation',data:[{x:3,y:3,r:18}],backgroundColor:'rgba(244,63,94,.6)'},
+      {label:'R2 Distribution',data:[{x:3,y:3,r:18}],backgroundColor:'rgba(244,63,94,.45)'},
+      {label:'R3 Draft quality',data:[{x:2,y:3,r:14}],backgroundColor:'rgba(245,158,11,.6)'},
+      {label:'R4 Trust',data:[{x:2,y:3,r:14}],backgroundColor:'rgba(245,158,11,.45)'},
+      {label:'R6 Trademark',data:[{x:2,y:2,r:11}],backgroundColor:'rgba(245,158,11,.35)'}]},
+    options:{plugins:{legend:{position:'bottom',labels:{boxWidth:10}},
+      title:{display:true,text:'Likelihood × Impact (R1/R2 overlap = dealbreaker)',color:C.muted}},
+      scales:{x:{title:{display:true,text:'Likelihood →'},min:0,max:4,ticks:{callback:v=>['','Low','Med','High',''][v]},grid:{color:C.line}},
+              y:{title:{display:true,text:'Impact →'},min:0,max:4,ticks:{callback:v=>['','Low','Med','High',''][v]},grid:{color:C.line}}}}});
+
+  // scorecard radar
+  new Chart(document.getElementById('scorecard'),{type:'radar',
+    data:{labels:['Market','Competition','Financial','Legal','Team/Feas.'],
+      datasets:[{label:'Score (1–5)',data:[3,2,2,3,2],
+      backgroundColor:'rgba(139,92,246,.2)',borderColor:C.pivot,pointBackgroundColor:C.pivot}]},
+    options:{plugins:{legend:{display:false},title:{display:true,text:'Go/No-Go scorecard',color:C.muted}},
+      scales:{r:{min:0,max:5,grid:{color:C.line},angleLines:{color:C.line},pointLabels:{color:C.muted},ticks:{display:false}}}}});
+
+  // gauge (doughnut as 0-5 gauge)
+  const s=2.30;
+  new Chart(document.getElementById('gauge'),{type:'doughnut',
+    data:{datasets:[{data:[s,5-s],backgroundColor:[C.pivot,C.line],borderWidth:0,circumference:270,rotation:225}]},
+    options:{cutout:'74%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+}
+
+addEventListener('load',()=>{try{charts()}catch(e){console.warn('charts',e)}});
+</script>
+</body>
+</html>
