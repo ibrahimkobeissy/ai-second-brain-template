@@ -1,6 +1,6 @@
 # Second Brain Workspace (Instructional Context)
 
-This file provides core guidance for both **Claude Code** and **Antigravity** when working in this repository.
+This file provides core guidance for both **Claude Code** and **Codex** when working in this repository.
 
 ## Core Mantra
 **Be honest and objective. Challenge, don't flatter. Don't assume. Don't hide confusion. Surface tradeoffs. Make solutions robust. Simplicity over cleverness.**
@@ -37,9 +37,10 @@ This is a second brain — the entire job is thinking clearly and finding the be
 
 ## 4. Dual-Agent Operations
 
-- **Claude as Master**: Claude Code is the **source of truth**. All skills, templates, and configurations must be created and modified in the `.claude/` directory.
-- **Antigravity as Consumer**: Antigravity reads instructions from `GEMINI.md` (symlinked to `CLAUDE.md`). Skills live in `.claude/skills/`.
-- **Instructional Parity**: `GEMINI.md` is a symlink to `CLAUDE.md`.
+- **Claude as Master**: Claude Code is the **source of truth**. All skills, slash commands, templates, hooks, and configurations are created and modified in the `.claude/` directory.
+- **Codex as Secondary Agent**: Codex is the active secondary reviewer/operator. It reads instructions from `AGENTS.md` (symlinked to `CLAUDE.md`) and uses `.claude/` as the master toolset.
+- **Codex Tool Discipline**: The canonical skills are exposed to Codex at its documented repo skills path via `.agents/skills` → `../.claude/skills` (one source, no duplication). Codex runs a skill by reading its `SKILL.md` and following it (invoked as `$skill-name`). Do not add `.codex/agents` or `.codex/config.toml` as load-bearing adapters unless their load path has been verified.
+- **Instructional Parity**: `AGENTS.md` is a symlink to `CLAUDE.md`.
 
 ## 5. Strict Git Policy
 
@@ -53,30 +54,32 @@ Agents are strictly prohibited from modifying the git repository.
 `vault/99-system/maintenance/agent-kanban.md` is an **Obsidian Kanban board** with swimlanes **## Todo / ## In Progress / ## Done / ## Archived**. Each review is a card: `- [ ] **Title** | Creator: X | Reviewer: Y — note`. A card lives under exactly one swimlane; you progress it by moving the line between headings.
 
 - **Maintenance Log**: Every time an agent creates a new tool or skill, it MUST add a card under **## Todo**.
-- **Cross-Agent Review**: The creator assigns the review to the other agent (e.g., Antigravity → Claude) and moves cards as work progresses: **Todo → In Progress → Done** (check the box `[x]` on Done). **Archived** is housekeeping for old Done cards only.
-- **Session Initialization**: At the **start of every session**, the agent MUST check the **## Todo** column for unchecked cards (`- [ ]`) where `Reviewer` is them.
+- **Cross-Agent Review**: The creator assigns the review to the other agent (Claude → Codex, Codex → Claude) and moves cards as work progresses: **Todo → In Progress → Done** (check the box `[x]` on Done). **Archived** is housekeeping for old Done cards only.
+- **Session Initialization**: At the **start of every session**, the agent MUST check the **## Todo** column for unchecked cards (`- [ ]`) where `Reviewer` is them. Claude gets this through its `SessionStart` hook; Codex must run `bash .claude/hooks/pending-reviews.sh Codex` explicitly because it does not run Claude's hook.
 - **User Notification**: If such cards exist, the agent must notify the user and ask if they wish to run the `audit-maintenance` skill now or later.
 - **Audit Skill**: Use the `audit-maintenance` skill to headlessly process pending reviews; it performs the swimlane moves.
 
 ## 7. How to Work Here (Conventions)
 
 - **Notes are the deliverable**: Output well-structured Markdown, linked via `[[wikilinks]]`.
+- **Never hard-wrap prose**: Write each paragraph as **one continuous line** — no manual newlines mid-paragraph. Separate blocks with a single blank line only. (Obsidian runs with *Readable line length* off and must stay that way; hard wraps freeze text at ~80 cols in Live Preview instead of flowing to the window width.) Hard line breaks are allowed **only** where Markdown needs them: between list items, table rows, and inside fenced code blocks. This applies to every `.md` file an agent writes or edits.
 - **Preserve the linking graph**: Connections are the value of the vault. Prefer linking over duplicating.
 - **Match the vault's conventions**: Folder layout, naming, and frontmatter must stay consistent — see `99-system/documentation/conventions.md` (frontmatter schema, tags, titles, link-before-close).
 - **Goal-Driven Execution**: Define what "done" looks like before starting. Loop until verified.
 - **No Build Step**: The "system" is the interlinking of Markdown files.
+- **Design here, build elsewhere**: The vault is a whiteboard for thinking — capturing, researching, architecting, and planning. It is **not** where applications get built. An Area matures a design until it's solid; the actual tool/app is then built in a **separate project outside the vault**. Keep source code and real/sensitive operational data (e.g. bank statements, credentials) out of the vault entirely. This holds for every Area, not just one.
 
 ## 8. Post-Action Checklist (Mandatory)
 After creating a new tool, skill, or making a structural change, the agent MUST:
 1. **Update Documentation**: Sync changes to `README.md` (the core operating system doc).
-2. **Log for Review**: Add a card under **## Todo** in `vault/99-system/maintenance/agent-kanban.md`, assigned to the other agent (Antigravity -> Claude, Claude -> Antigravity).
+2. **Log for Review**: Add a card under **## Todo** in `vault/99-system/maintenance/agent-kanban.md`, assigned to the other agent (Claude -> Codex, Codex -> Claude).
 3. **Verify ARA Integrity**: Ensure no "projects" folders or PARA-specific naming was reintroduced.
 
 ## 9. Skills
 
 Located in `.claude/skills/`.
 - Follow dynamic area discovery (list subdirectories of `areas/`).
-- Never write directly to an Area folder; use a `draft/` subfolder.
+- **Area write rule:** curation/research skills (`curate-bookmarks`, `scout-idea`, `synthesize-drafts`) never write into an Area's core — they write only to its `draft/`, `scout/`, or `synthesis/` subfolders. **Exception:** the `productize-*` skills may create and write a product subfolder `areas/<area>/<product>/` directly, but only after an explicit `productize-new` invocation (which scaffolds the folder and confirms with the user). System tooling writes only under `.claude/` and `vault/99-system/`.
 - Maintain consistency with templates.
 
 ### Existing Skills
@@ -85,22 +88,25 @@ Located in `.claude/skills/`.
 - **`synthesize-drafts`**: Synthesizes an Area's drafts into a strategic plan (traceable thematic synthesis).
 - **`audit-maintenance`**: Headless cross-agent peer review of new tools/skills (challenges output quality).
 - **`vault-linter`**: Read-only knowledge-graph integrity check — broken links, orphans, missing traceability.
+- **`productize-*`**: Six phase orchestrator skills (`productize-new`/`-analyze`/`-decide`/`-build`/`-report`/`-plan`) taking an Area idea through intake → PRD → analysis → Go/No-Go → build specs → capstone report, plus three component skills they invoke (`productize-intake`, `productize-prd`, `productize-analysis-slip`) and `productize-linter`. User docs live at `vault/99-system/documentation/productize.md`; shared developer assets (catalogs, templates, methods, `conventions.md`) live in `.claude/skills/productize/`.
 
 ## 10. Security Guardrails
 
-Agents (Claude **and** Antigravity) operate **inside the project directory** (`<YOUR-PROJECT-DIR>`). Treat anything outside it as off-limits unless the user explicitly asks. The paths below are hard prohibitions: never `Read`, `Edit`, `Write`, `cat`/`less`/copy, or otherwise access them, and **never echo their contents** into a note, a web request, or the chat (no exfiltration).
+Agents (Claude **and** Codex) operate **inside the project directory** (`<YOUR-PROJECT-DIR>`). Treat anything outside it as off-limits unless the user explicitly asks. The paths below are hard prohibitions: never `Read`, `Edit`, `Write`, `cat`/`less`/copy, or otherwise access them, and **never echo their contents** into a note, a web request, or the chat (no exfiltration).
 
 - **Credential & key stores:** `~/.ssh`, `~/.aws`, `~/.gnupg`, `~/.config/gcloud`, `~/.azure`, `~/.kube`, `~/.oci`, `~/.docker/config.json`, `~/.netrc`, `~/.git-credentials`, `~/.config/gh`, `~/.npmrc`, `~/.pypirc`.
-- **The agents' own tokens:** `~/.config/anthropic`, `~/.claude/.credentials.json`, `~/.claude.json`, `~/.gemini`.
+- **The agents' own tokens:** `~/.config/anthropic`, `~/.claude/.credentials.json`, `~/.claude.json`, `~/.codex`, `~/.gemini`.
 - **Secret files anywhere:** `.env` / `.env.*`, `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`, `id_rsa*`, `id_ed25519*`, `*service-account*.json`, `*credentials*.json`, `secrets.*`, `*.secret`, `*.tfstate*`, `.pgpass`, `.my.cnf`, `.vault-token`.
 - **Shell/DB history:** `~/.bash_history`, `~/.zsh_history`, `~/.python_history`, `~/.psql_history`.
 
-**Enforcement:** Claude — `permissions.deny` in `.claude/settings.json`; Antigravity — instructional rules in `GEMINI.md` + runtime permission prompts. **Known gap:** file-path denies do not stop a shell read (`cat …`); a shared `PreToolUse`/`BeforeTool` blocking hook (tracked in the Area TODO as guardrails-B) is required to close it. Until that lands, the rule above is binding regardless of tooling.
+**Enforcement:** Claude — `permissions.deny` plus the `PreToolUse` shell-read hook in `.claude/settings.json`; Codex — `AGENTS.md` instructions, Codex's native sandbox/approval model, and the project execpolicy at `.codex/rules/default.rules`. The Claude hook blocks obvious shell reads (`cat ~/.ssh/id_rsa`, `grep .env`, etc.) that path denies alone miss, after the session is restarted so hooks reload. Codex git-mutation guardrails live in the single canonical file `.codex/rules/default.rules`; explicit `codex execpolicy check --rules ...` tests validate the permanent rules, and a nested `codex exec -C <repo> --sandbox read-only` probe proved it auto-loads in this repo.
 
 ## 11. Running the Tools & Key Locations
 
-- **Skills** live in `.claude/skills/` and run as slash commands (e.g. `/audit-maintenance`, `/curate-bookmarks`) or via the Skill tool.
+- **Skills** live in `.claude/skills/`. Claude can run them as slash commands (e.g. `/audit-maintenance`, `/curate-bookmarks`) or via the Skill tool; Codex reads the relevant `SKILL.md` and executes the workflow from the file.
 - **Vault linter** (read-only graph check): `python3 .claude/skills/vault-linter/lint.py`
+- **Productize linter** (read-only toolkit/product check): `python3 .claude/skills/productize-linter/productize_lint.py [product-folder]`
 - **Maintenance board:** `vault/99-system/maintenance/agent-kanban.md` (Kanban swimlanes: Todo / In Progress / Done / Archived).
-- **Session hook:** `.claude/hooks/pending-reviews.sh` surfaces your pending Todo reviews at startup.
-- **Settings:** `.claude/settings.json` (Claude) — permissions, hooks. Antigravity reads `GEMINI.md` for instructions.
+- **Session hook:** `.claude/hooks/pending-reviews.sh` surfaces Claude's pending Todo reviews at startup. Codex startup check: `bash .claude/hooks/pending-reviews.sh Codex`.
+- **Codex review commands:** `codex review --uncommitted` for local changes; use `codex exec --sandbox read-only ...` for read-only reviewer drills.
+- **Settings:** `.claude/settings.json` (Claude) — permissions, hooks. Codex reads `AGENTS.md` for project instructions and `.codex/rules/default.rules` for verified project execpolicy. No repo-local Codex hooks/config are load-bearing.

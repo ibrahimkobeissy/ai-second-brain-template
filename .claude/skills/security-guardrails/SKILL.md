@@ -14,8 +14,8 @@ description: >-
 # Security Guardrails
 
 Portable, copy-paste protection that stops an agent (Claude Code, and via the
-prose rules, other agents too) from reading or leaking credential and secret
-files. **Drop this folder into any project's `.claude/skills/`, run the
+prose rules, Codex and other agents too) from reading or leaking credential and
+secret files. **Drop this folder into any project's `.claude/skills/`, run the
 installer once, and the project is hardened.**
 
 ## Why three layers
@@ -32,8 +32,8 @@ other's blind spots:
    `less`, `head`, `xxd`, `cp`, `base64`, `vim`, …) regardless of the binary.
    This closes the gap layer 1 leaves open, and also re-checks the native tools.
 3. **Instructional rules** (`references/instructional-rules.md`) — prose to paste
-   into `CLAUDE.md`/`GEMINI.md` so agents whose runtime ignores `settings.json`
-   (e.g. Gemini / Antigravity) are still bound by the same policy.
+   into `CLAUDE.md`/`AGENTS.md` so agents whose runtime ignores Claude
+   `settings.json` hooks (e.g. Codex or other tools) are still bound by the same policy.
 
 **Be honest about the limit:** the hook is a strong heuristic, not a sandbox. A
 determined agent could obfuscate a path (variables, base64, `eval`). The point is
@@ -59,8 +59,9 @@ the user; don't oversell it as airtight.
    All cases should pass. This runs real block/allow events through the hook.
 4. **Add the prose rules.** Open `references/instructional-rules.md` and paste
    its `## Security Guardrails` section into the project's `CLAUDE.md` (and
-   `GEMINI.md` if present). Adapt only the wording to match the file's style —
-   keep the path list and the "ask the user to do it manually" rule intact.
+   `AGENTS.md` if it is not a symlink to the same file). Adapt only the wording
+   to match the file's style — keep the path list and the "ask the user to do it
+   manually" rule intact.
 5. **Tell the user to restart the session.** Hooks are loaded at session start,
    so the `PreToolUse` hook only takes effect in a fresh Claude Code session.
 
@@ -73,7 +74,7 @@ Credential & key stores (`~/.ssh`, `~/.aws`, `~/.gnupg`, `~/.config/gcloud`,
 `~/.azure`, `~/.kube`, `~/.oci`, `~/.docker/config.json`, `~/.netrc`,
 `~/.git-credentials`, `~/.config/gh`, `~/.npmrc`, `~/.pypirc`); agent tokens
 (`~/.config/anthropic`, `~/.claude/.credentials.json`, `~/.claude.json`,
-`~/.gemini`); secret files anywhere (`.env*`, `*.pem`, `*.key`, `*.p12`,
+`~/.codex`, `~/.gemini`); secret files anywhere (`.env*`, `*.pem`, `*.key`, `*.p12`,
 `*.pfx`, `*.jks`, `*.keystore`, `id_rsa*`/`id_ed25519*`/`id_ecdsa*`,
 `*service-account*.json`, `*credentials*.json`, `secrets.*`, `*.secret`,
 `*.tfstate*`, `.pgpass`, `.my.cnf`, `.vault-token`); and shell/DB history.

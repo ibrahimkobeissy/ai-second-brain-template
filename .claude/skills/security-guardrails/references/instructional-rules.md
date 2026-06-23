@@ -1,10 +1,10 @@
-# Security Guardrails (paste into CLAUDE.md / GEMINI.md)
+# Security Guardrails (paste into CLAUDE.md / AGENTS.md)
 
 Copy the section below into the project's agent-instruction file so that **every**
-agent — including ones whose runtime ignores `settings.json` hooks (e.g. Gemini /
-Antigravity) — is bound by the same policy. The enforcing layers (deny rules +
-the PreToolUse hook) back it up for Claude Code; this prose is what carries the
-rule to agents that the hook can't reach.
+agent — including ones whose runtime ignores Claude `settings.json` hooks (e.g.
+Codex or other tools) — is bound by the same policy. The enforcing layers (deny
+rules + the PreToolUse hook) back it up for Claude Code; this prose is what
+carries the rule to agents that the hook can't reach.
 
 ---
 
@@ -20,7 +20,7 @@ web request, or the chat (no exfiltration).
   `~/.azure`, `~/.kube`, `~/.oci`, `~/.docker/config.json`, `~/.netrc`,
   `~/.git-credentials`, `~/.config/gh`, `~/.npmrc`, `~/.pypirc`.
 - **Agent tokens:** `~/.config/anthropic`, `~/.claude/.credentials.json`,
-  `~/.claude.json`, `~/.gemini`.
+  `~/.claude.json`, `~/.codex`, `~/.gemini`.
 - **Secret files anywhere:** `.env` / `.env.*`, `*.pem`, `*.key`, `*.p12`,
   `*.pfx`, `*.jks`, `*.keystore`, `id_rsa*`, `id_ed25519*`, `id_ecdsa*`,
   `*service-account*.json`, `*credentials*.json`, `secrets.*`, `*.secret`,

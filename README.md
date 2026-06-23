@@ -1,10 +1,10 @@
 # 🧠 AI Second Brain — an agent-operated PKM template for Obsidian
 
-> A self-pruning, high-signal **second brain** for **Obsidian**, operated by AI coding agents (**Claude Code** & **Antigravity**). Capture an idea → research it → synthesize a plan → ship actionable tasks. The vault is for *thinking*; the agents do the labor.
+> A self-pruning, high-signal **second brain** for **Obsidian**, operated by AI coding agents (**Claude Code** & **Codex**). Capture an idea → research it → synthesize a plan → ship actionable tasks. The vault is for *thinking*; the agents do the labor.
 
 ![Obsidian](https://img.shields.io/badge/Obsidian-vault-7c3aed)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-agent-da7756)
-![Antigravity](https://img.shields.io/badge/Antigravity-agent-1a73e8)
+![Codex](https://img.shields.io/badge/Codex-agent-10a37f)
 ![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey)
 
 This repository is a **template**: clone it, open it in Obsidian, point your AI agent at it, and you have a working *knowledge operating system* — an ARA-structured vault plus a toolbelt of skills that turn raw bookmarks into strategic plans and tracked work. **No personal areas or notes are included** — you bring your own; the scaffolding and tooling are the product.
@@ -48,13 +48,14 @@ flowchart LR
 
 ## 🧰 The Toolbelt (Skills)
 
-Run these as slash commands in Claude Code (or via the Skill tool):
+Run these as slash commands in Claude Code (or via the Skill tool); Codex invokes the same skills with `$skill`:
 
 - **`/init-area`** — scaffold a new Area: challenge the idea, define goals/scope, create the hub note, Kanban board, and triage queue.
 - **`/curate-bookmarks`** — turn inbox captures into per-Area "what can we steal" drafts; judge each link independently; log the source.
 - **`/scout-idea`** — challenge an idea's value, then run a broad discovery sweep for tools/OSS/articles when you have no bookmarks yet.
 - **`/synthesize-drafts`** — analyze an Area's drafts against each other with a scientific thematic matrix and produce one strategic plan.
 - **`/plan-to-kanban`** — extract the plan's action items into the Area's Kanban board, deduplicated.
+- **`/productize-new` → `/productize-report`** — a six-phase product toolkit: take an Area idea from intake → PRD → market/competitive/feasibility analyses → an honest Go/No-Go → build specs + roadmap → a capstone visual HTML report. Honest-by-design (thin evidence → low confidence; a weak case earns NO-GO/PIVOT).
 - **`/vault-linter`** — read-only graph integrity check: broken `[[wikilinks]]`, orphan notes, missing traceability.
 - **`/audit-maintenance`** — headless cross-agent peer review that challenges and hardens newly built tools.
 - **`/security-guardrails`** — install a portable deny-list **plus** a `PreToolUse` hook that blocks shell reads of secrets, in *any* project.
@@ -63,7 +64,7 @@ Run these as slash commands in Claude Code (or via the Skill tool):
 
 1. **Use this template** (or clone the repo).
 2. Open the `vault/` folder in **Obsidian** and enable the bundled community plugins: **Kanban**, **Tasks**, **Mermaid Tools**, **mdmenu**.
-3. Install **[Claude Code](https://claude.com/claude-code)** (and/or Antigravity) and open the repo as your project — the agent reads `CLAUDE.md` automatically.
+3. Install **[Claude Code](https://claude.com/claude-code)** (and/or Codex) and open the repo as your project — the agent reads `CLAUDE.md` automatically (Codex reads it via the `AGENTS.md` symlink).
 4. Create your first Area: `/init-area`.
 5. Drop a link into `vault/00-inbox/`, then run `/curate-bookmarks` → `/synthesize-drafts` → `/plan-to-kanban`.
 
@@ -71,7 +72,7 @@ Run these as slash commands in Claude Code (or via the Skill tool):
 
 - **[Operating System doc](vault/99-system/documentation/second-brain-operating-system.md)** — the full philosophy, the loop, peer review, and the complete skill reference.
 - **[Vault conventions](vault/99-system/documentation/conventions.md)** — frontmatter schema, tags, titles, link-before-close.
-- **`CLAUDE.md`** — the master instruction set both agents follow (`GEMINI.md` is a symlink to it).
+- **`CLAUDE.md`** — the master instruction set both agents follow (`AGENTS.md` is a symlink to it, so Codex reads the same rules).
 
 ## 🛡️ Security
 

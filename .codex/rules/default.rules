@@ -1,0 +1,90 @@
+# Codex git-mutation guardrails.
+#
+# Active project path: `.codex/rules/default.rules`.
+# Current status: auto-load proved in this repo with a temporary `git status`
+# deny rule and nested `codex exec -C <repo> --sandbox read-only`; permanent
+# rules are validated with explicit `codex execpolicy check --rules` checks.
+
+prefix_rule(
+    pattern = ["git", [
+        "add",
+        "am",
+        "apply",
+        "bisect",
+        "branch",
+        "checkout",
+        "cherry-pick",
+        "clean",
+        "commit",
+        "config",
+        "fetch",
+        "gc",
+        "init",
+        "merge",
+        "mv",
+        "notes",
+        "pull",
+        "push",
+        "rebase",
+        "reflog",
+        "replace",
+        "reset",
+        "restore",
+        "revert",
+        "rm",
+        "stash",
+        "submodule",
+        "switch",
+        "tag",
+        "sparse-checkout",
+        "update-index",
+        "update-ref",
+        "worktree",
+    ]],
+    decision = "forbidden",
+    justification = "Agents must not mutate git state. The user owns staging, branches, refs, history, remotes, tags, and git configuration.",
+    match = [
+        "git add .",
+        "git commit -m migration",
+        "git reset HEAD",
+        "git checkout main",
+        "git switch -c feature",
+        "git branch feature",
+        "git fetch",
+        "git tag v1.0.0",
+        "git config user.name Agent",
+    ],
+    not_match = [
+        "git status",
+        "git diff -- CLAUDE.md",
+        "git log --oneline",
+        "git show HEAD:CLAUDE.md",
+        "git ls-files",
+        "git rev-parse --show-toplevel",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "remote", [
+        "add",
+        "remove",
+        "rename",
+        "rm",
+        "set-branches",
+        "set-head",
+        "set-url",
+        "update",
+    ]],
+    decision = "forbidden",
+    justification = "Agents must not mutate git remotes. The user owns remote configuration and network ref updates.",
+    match = [
+        "git remote add origin git@example.com:repo.git",
+        "git remote rm origin",
+        "git remote set-url origin git@example.com:repo.git",
+        "git remote update",
+    ],
+    not_match = [
+        "git remote -v",
+        "git remote get-url origin",
+    ],
+)

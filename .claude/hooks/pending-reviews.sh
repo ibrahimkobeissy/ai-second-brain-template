@@ -6,9 +6,10 @@
 # Kanban board whose `Reviewer:` matches. Cards in In Progress / Done / Archived
 # are ignored, matching the audit-maintenance skill's definition.
 #
-# Usage: pending-reviews.sh <Reviewer>      e.g. pending-reviews.sh Claude
+# Usage: pending-reviews.sh <Reviewer>      e.g. pending-reviews.sh Claude / Codex
 #
-# Output is JSON on stdout, valid for both Claude Code and Antigravity:
+# Output is JSON on stdout. Claude Code consumes it as a SessionStart hook;
+# Codex can run it explicitly and read the same payload:
 #   - systemMessage         -> shown directly to the user in the terminal
 #   - additionalContext     -> added to the agent's context so it can act
 # Emits "{}" (a no-op) when there are no pending reviews. Never blocks startup.

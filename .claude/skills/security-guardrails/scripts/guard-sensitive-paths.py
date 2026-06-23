@@ -26,13 +26,23 @@ internal error also exits 0 -- the hook must never wedge the tool pipeline.
 """
 import fnmatch
 import json
+import os
 import re
 import sys
 
 # Whole directories that are sensitive as a path segment, e.g. ~/.ssh/anything.
+# These names never legitimately appear as a repo-local directory, so matching
+# the bare segment anywhere in the path is safe.
 SENSITIVE_DIR_SEGMENTS = {
-    ".ssh", ".aws", ".gnupg", ".azure", ".kube", ".oci", ".gemini",
+    ".ssh", ".aws", ".gnupg", ".azure", ".kube", ".oci",
 }
+
+# Credential dirs that are sensitive ONLY in the user's home (~/.codex), because
+# the same name is also a legitimate *repo-local* project-config directory:
+# Codex keeps its execpolicy rules in a committed ./.codex/rules/, and Gemini
+# uses ./.gemini. Blocking those by bare segment would wall the agent off from
+# its own repository, so these match only when the path is home-anchored.
+HOME_ANCHORED_DIR_SEGMENTS = (".codex", ".gemini")
 
 # Multi-segment suffixes that are sensitive even though the parent dir is not
 # (e.g. ~/.config holds plenty of innocuous things; ~/.config/gcloud does not).
@@ -73,6 +83,17 @@ def path_is_sensitive(path):
     padded = "/" + low
     for suffix in SENSITIVE_PATH_SUFFIXES:
         if ("/" + suffix) in padded:
+            return True
+
+    # Home-anchored credential dirs (~/.codex, ~/.gemini): sensitive only in the
+    # home directory, never as a repo-local .codex/.gemini project dir. ${HOME}/
+    # and $HOME/ were already folded to ~/ above; also match the expanded home.
+    home = os.path.expanduser("~").rstrip("/")
+    for seg in HOME_ANCHORED_DIR_SEGMENTS:
+        if p == "~/" + seg or p.startswith("~/" + seg + "/"):
+            return True
+        anchored = home + "/" + seg
+        if p == anchored or p.startswith(anchored + "/"):
             return True
 
     segments = [s for s in p.split("/") if s]

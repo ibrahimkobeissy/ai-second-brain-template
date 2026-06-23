@@ -42,6 +42,7 @@ DENY_RULES = [
     "Read(~/.config/anthropic/**)",
     "Read(~/.claude/.credentials.json)",
     "Read(~/.claude.json)",
+    "Read(~/.codex/**)",
     "Read(~/.gemini/**)",
     # --- Shell / DB history ---
     "Read(~/.bash_history)", "Read(~/.zsh_history)",

@@ -20,7 +20,7 @@ exhaustive and repeatable. **Read-only: it never edits the vault, only prints a 
 python3 .claude/skills/vault-linter/lint.py
 ```
 
-Both Claude and Antigravity run the same script via the shared skills folder. Optionally pass
+Both Claude and Codex run the same script via the shared skills folder. Optionally pass
 a vault path as the first argument to lint a different vault.
 
 ## What it checks
