@@ -56,6 +56,7 @@ Run these as slash commands in Claude Code (or via the Skill tool); Codex invoke
 - **`/synthesize-drafts`** — analyze an Area's drafts against each other with a scientific thematic matrix and produce one strategic plan.
 - **`/plan-to-kanban`** — extract the plan's action items into the Area's Kanban board, deduplicated.
 - **`/productize-new` → `/productize-report`** — a six-phase product toolkit: take an Area idea from intake → PRD → market/competitive/feasibility analyses → an honest Go/No-Go → build specs + roadmap → a capstone visual HTML report. Honest-by-design (thin evidence → low confidence; a weak case earns NO-GO/PIVOT).
+- **`/job-hunt-cv-from-doc` → `/job-hunt-starter`** — a personal job-hunt toolset built on [career-ops](https://github.com/santifer/career-ops) as the execution hub: turn a CV into a data spine, grow a STAR story bank, prep & drill interviews, scout companies into HTML dossiers, and track progress — the skills *feed* career-ops and *beautify* what it can't. Ships as skills + an empty scaffold; your data stays private.
 - **`/vault-linter`** — read-only graph integrity check: broken `[[wikilinks]]`, orphan notes, missing traceability.
 - **`/audit-maintenance`** — headless cross-agent peer review that challenges and hardens newly built tools.
 - **`/security-guardrails`** — install a portable deny-list **plus** a `PreToolUse` hook that blocks shell reads of secrets, in *any* project.
@@ -74,6 +75,19 @@ It is **honest by design**: thin evidence yields low confidence, and a weak case
 - 📂 **Every artifact:** the [`standup-tools` Area](vault/02-personal/areas/standup-tools/) — PRD, 16 analyses, Go/No-Go, 13 deliverables + roadmap, plus the visual [summary report](vault/02-personal/areas/standup-tools/standupzero/07-summary.html).
 - 📘 **Reference:** [Productize documentation](vault/99-system/documentation/productize.md) — how the phases, control plan, and analysis dependency map work.
 
+## 💼 Job Hunt — run a real search on a toolset you control
+
+A personal **job-hunt toolset** (`job-hunt-*` skills) built on **[career-ops](https://github.com/santifer/career-ops) as the execution hub** — the model is *build the bespoke, adopt the commodity*. career-ops does the heavy engine work (scan job boards, **A–F deep-score** each role, generate the ATS CV PDF, cover letters, outreach, application tracking); the vault skills **feed** it (turn your CV into the inputs it needs) and **beautify** what it can't (a shareable HTML portfolio, company dossiers, a progress dashboard).
+
+Everything orbits one spine — your `cv.md` — which every skill (and career-ops, via a symlink) reads:
+
+`cv-from-doc` (CV PDF/Word → structured `cv.md`) → `craft-profile` (portfolio HTML) · `capture-story` (STAR story bank) · `interview-prep` · `mock-interview` → `careerops-profile` / `careerops-portals` (configure career-ops) → **career-ops** scan + A–F eval → `scout-company` (dossier + me-vs-the-JD matrix) → apply via career-ops → `interview-debrief` (mines new stories back into the bank). Run `job-hunt-starter` anytime for an on-disk progress dashboard that nudges you to the next step.
+
+**Privacy by design:** unlike the StandupZero demo, this ships as **skills + an empty folder scaffold only** — your CV, stories, and dossiers live under `hunter/` and never leave your own private remote. Nothing personal is committed to this template.
+
+- 📖 **How to run it, step by step:** [Job-Hunt toolset manual](vault/99-system/documentation/job-hunt-toolset.md) — the full journey, the vault ↔ career-ops switching points, and the flywheel that makes every interview sharpen the next.
+- 📂 **The scaffold to fill:** the [`job-hunt` Area](vault/02-personal/areas/job-hunt/) — the ready-to-use structure (`hunter/`, `draft/`, `scout/`, `synthesis/`) you drop your own CV into.
+
 ## 🚀 Quickstart
 
 1. **Use this template** (or clone the repo).
@@ -86,6 +100,7 @@ It is **honest by design**: thin evidence yields low confidence, and a weak case
 
 - **[Operating System doc](vault/99-system/documentation/second-brain-operating-system.md)** — the full philosophy, the loop, peer review, and the complete skill reference.
 - **[Productize toolkit](vault/99-system/documentation/productize.md)** — the six-phase idea → build-specs pipeline, with the [StandupZero worked example](vault/99-system/documentation/productize-showcase.md).
+- **[Job-Hunt toolset](vault/99-system/documentation/job-hunt-toolset.md)** — the `job-hunt-*` skills + career-ops workflow: CV spine, story bank, interview prep, company dossiers, and progress dashboard.
 - **[Vault conventions](vault/99-system/documentation/conventions.md)** — frontmatter schema, tags, titles, link-before-close.
 - **`CLAUDE.md`** — the master instruction set both agents follow (`AGENTS.md` is a symlink to it, so Codex reads the same rules).
 
