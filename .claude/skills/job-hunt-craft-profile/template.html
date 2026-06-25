@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--
+  ============================================================================
+  job-hunt-craft-profile · TEMPLATE SHELL  ("The Operator's Dossier")
+  ----------------------------------------------------------------------------
+  This file is the proven design. The job-hunt-craft-profile skill COPIES it to
+  job-hunt/hunter/personal-profile/my-profile.html and fills it from the user's
+  interrogated CV. Everything below is a FICTIONAL demo persona ("A. Rivera")
+  so the look is viewable before any real data exists.
+
+  WHEN FILLING:
+   • Replace EVERY {{SLOT}} and ALL fictional sample copy with the user's real,
+     confirmed data. Leave no "Rivera" text behind.
+   • Blocks marked <!-- REPEAT:x --> … <!-- /REPEAT:x --> are cloned once per
+     item (one per role, skill group, project, deployment row, credential).
+   • NEVER invent a number, metric, employer, or date. If the CV/interview did
+     not establish it, omit the element — do not fabricate to fill the layout.
+   • Keep the <style> and <script> blocks intact; only edit content in <body>.
+  ============================================================================
+-->
+<title>{{FULL_NAME}} — Profile</title>
+<meta name="description" content="{{POSITIONING_ONELINE}}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0C1A1E; --ink-2:#102A30; --ink-3:#091316;
+    --paper:#EFE7D6; --paper-dim:#D9D0BD;
+    --brass:#C9A24B; --brass-soft:rgba(201,162,75,.14); --brass-line:rgba(201,162,75,.32);
+    --teal:#5FB7A8;
+    --text:#E8EFEC; --muted:#90A6A3; --line:#1E3A40;
+    --radius:14px; --shadow:0 18px 50px rgba(0,0,0,.45);
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--ink);color:var(--text);
+    font-family:"Hanken Grotesk",system-ui,sans-serif;line-height:1.62;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3,.display{font-family:"Bricolage Grotesque","Hanken Grotesk",sans-serif;
+    font-weight:800;line-height:1.08;letter-spacing:-.02em}
+  a{color:var(--brass);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  section{padding:88px 0;position:relative}
+  .mono{font-family:"Space Mono",ui-monospace,monospace}
+
+  /* field-code eyebrow (dossier label — encodes "this is a field", not a sequence) */
+  .eyebrow{font-family:"Space Mono",monospace;font-size:.74rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--brass);display:inline-flex;gap:9px;align-items:center;margin:0 0 16px}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--brass);display:inline-block}
+  h2.title{font-size:clamp(1.7rem,3.8vw,2.55rem);margin:0 0 10px}
+  .lead{color:var(--muted);font-size:1.06rem;max-width:680px;margin:0}
+
+  /* progress + nav */
+  #progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--brass);z-index:60;transition:width .08s linear}
+  nav.top{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(10px);
+    background:rgba(9,19,22,.78);border-bottom:1px solid var(--line);
+    transform:translateY(-100%);transition:transform .35s ease}
+  nav.top.show{transform:translateY(0)}
+  nav.top .wrap{display:flex;align-items:center;gap:6px;padding:12px 24px;flex-wrap:wrap}
+  nav.top .brand{font-family:"Bricolage Grotesque";font-weight:800;margin-right:auto;font-size:1rem}
+  nav.top a{color:var(--muted);font-size:.78rem;font-family:"Space Mono",monospace;
+    padding:5px 11px;border-radius:999px}
+  nav.top a:hover{color:var(--text);background:var(--ink-2);text-decoration:none}
+
+  /* hero */
+  .hero{min-height:100vh;display:flex;align-items:center;overflow:hidden}
+  .hero .field{position:absolute;inset:0;opacity:.5;
+    background:
+      radial-gradient(70% 55% at 18% 18%,rgba(95,183,168,.12),transparent 60%),
+      radial-gradient(60% 55% at 88% 82%,rgba(201,162,75,.13),transparent 60%),
+      repeating-linear-gradient(0deg,transparent 0 38px,rgba(95,183,168,.045) 38px 39px),
+      repeating-linear-gradient(90deg,transparent 0 38px,rgba(95,183,168,.045) 38px 39px);
+    animation:drift 26s linear infinite}
+  @keyframes drift{from{background-position:0 0,0 0,0 0,0 0}to{background-position:0 0,0 0,0 78px,78px 0}}
+  .hero .horizon{position:absolute;left:0;right:0;bottom:18%;height:1px;background:var(--brass-line)}
+  .hero .wrap{position:relative;z-index:2}
+  .hero .tag{font-family:"Space Mono",monospace;font-size:.78rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 18px}
+  .hero .tag b{color:var(--brass)}
+  .hero h1{font-size:clamp(2.7rem,8vw,5.6rem);margin:0 0 .12em}
+  .hero .pos{font-size:clamp(1.1rem,2.6vw,1.55rem);color:var(--paper);max-width:720px;
+    font-weight:500;line-height:1.4}
+  .hero .pos .mk{color:var(--brass)}
+
+  /* signal strip (vital stats) */
+  .signal{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:40px;
+    background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .signal .cell{background:var(--ink-2);padding:18px 20px}
+  .signal .k{font-family:"Space Mono",monospace;font-size:.68rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted)}
+  .signal .v{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.35rem;margin-top:6px;color:var(--text)}
+  .signal .v small{font-weight:500;font-size:.8rem;color:var(--muted);font-family:"Hanken Grotesk"}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* thesis */
+  .thesis{font-family:"Bricolage Grotesque";font-weight:600;
+    font-size:clamp(1.4rem,3.2vw,2rem);line-height:1.34;letter-spacing:-.015em;
+    max-width:880px;color:var(--paper)}
+  .thesis .mk{color:var(--brass)}
+
+  /* impact stats (count-up) */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .stat{background:var(--ink-2);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px;border-top:2px solid var(--brass-line)}
+  .stat .num{font-family:"Bricolage Grotesque";font-weight:800;
+    font-size:clamp(2rem,5vw,3rem);color:var(--brass);line-height:1}
+  .stat .num .suf{color:var(--text)}
+  .stat .lbl{color:var(--muted);font-size:.9rem;margin-top:10px}
+
+  /* timeline */
+  .track{position:relative;margin-top:8px;padding-left:30px}
+  .track::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:1px;background:var(--line)}
+  .role{position:relative;margin-bottom:30px;background:var(--ink-2);border:1px solid var(--line);
+    border-radius:var(--radius);padding:24px;transition:transform .25s,border-color .25s,box-shadow .25s}
+  .role:hover{transform:translateX(4px);border-color:var(--brass-line);box-shadow:var(--shadow)}
+  .role::before{content:"";position:absolute;left:-30px;top:28px;width:13px;height:13px;border-radius:50%;
+    background:var(--ink);border:2px solid var(--brass)}
+  .role .when{font-family:"Space Mono",monospace;font-size:.74rem;color:var(--brass);letter-spacing:.06em}
+  .role h3{font-size:1.22rem;margin:6px 0 2px}
+  .role .org{color:var(--paper);font-weight:600;font-size:.96rem}
+  .role .ctx{color:var(--muted);font-size:.95rem;margin:12px 0 0}
+  .role .impact{margin:14px 0 0;padding:13px 16px;background:var(--brass-soft);
+    border-left:2px solid var(--brass);border-radius:0 8px 8px 0;font-size:.95rem;color:var(--paper)}
+  .stack{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+  .stack span{font-family:"Space Mono",monospace;font-size:.72rem;color:var(--teal);
+    border:1px solid var(--line);padding:3px 9px;border-radius:999px;background:var(--ink-3)}
+
+  /* skills → evidence */
+  .skillgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .sgroup{background:var(--ink-2);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .sgroup h3{font-size:1.05rem;margin:0 0 6px}
+  .sgroup .dom{font-family:"Space Mono",monospace;font-size:.7rem;color:var(--brass);
+    text-transform:uppercase;letter-spacing:.1em}
+  .sgroup ul{margin:14px 0 0;padding:0;list-style:none}
+  .sgroup li{font-size:.92rem;padding:8px 0;border-top:1px solid var(--line);color:var(--text)}
+  .sgroup li .ev{display:block;color:var(--muted);font-size:.82rem;margin-top:2px}
+  .sgroup li .ev::before{content:"↳ proof: ";color:var(--teal);font-family:"Space Mono",monospace;font-size:.74rem}
+
+  /* projects */
+  .projects{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .proj{background:var(--ink-2);border:1px solid var(--line);border-radius:var(--radius);padding:24px;
+    transition:transform .25s,border-color .25s,box-shadow .25s}
+  .proj:hover{transform:translateY(-4px);border-color:var(--brass-line);box-shadow:var(--shadow)}
+  .proj h3{font-size:1.12rem;margin:0 0 10px}
+  .proj .row{font-size:.9rem;margin:7px 0;color:var(--muted)}
+  .proj .row b{color:var(--paper);font-weight:600;font-family:"Space Mono",monospace;font-size:.72rem;
+    text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:2px}
+
+  /* DEPLOYMENT MAP — the signature */
+  #deploy{background:linear-gradient(180deg,var(--ink),var(--ink-3))}
+  .deploy{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:8px}
+  .drow{display:grid;grid-template-columns:240px 1fr;gap:0;background:var(--ink-2)}
+  .drow .cap{padding:22px;border-right:1px solid var(--line);background:var(--ink-3)}
+  .drow .cap .name{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.08rem}
+  .drow .cap .from{font-family:"Space Mono",monospace;font-size:.72rem;color:var(--muted);margin-top:6px;display:block}
+  .drow .to{padding:22px}
+  .drow .tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .drow .tags span{font-family:"Space Mono",monospace;font-size:.74rem;color:var(--ink);
+    background:var(--brass);padding:4px 11px;border-radius:999px;font-weight:700}
+  .drow .why{color:var(--muted);font-size:.92rem;margin:0}
+  .drow .why b{color:var(--paper);font-weight:600}
+
+  /* credentials */
+  .creds{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .cred{background:var(--ink-2);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+  .cred .when{font-family:"Space Mono",monospace;font-size:.72rem;color:var(--brass)}
+  .cred h3{font-size:1rem;margin:6px 0 2px}
+  .cred .org{color:var(--muted);font-size:.88rem}
+
+  /* appendix / footer */
+  footer{border-top:1px solid var(--line);padding:46px 0 70px;color:var(--muted);font-size:.86rem}
+  .trace{background:var(--ink-2);border:1px dashed var(--line);border-radius:var(--radius);
+    padding:18px 20px;margin-top:8px;font-size:.88rem;color:var(--muted)}
+  .trace b{color:var(--text);font-weight:600}
+
+  @media(max-width:760px){
+    .signal,.stats{grid-template-columns:repeat(2,1fr)}
+    .skillgrid,.projects,.creds{grid-template-columns:1fr}
+    .drow{grid-template-columns:1fr}
+    .drow .cap{border-right:none;border-bottom:1px solid var(--line)}
+    section{padding:64px 0}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+<noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
+</head>
+<body>
+<div id="progress"></div>
+
+<nav class="top" id="topnav">
+  <div class="wrap">
+    <span class="brand">{{FULL_NAME}}</span>
+    <a href="#thesis">Thesis</a>
+    <a href="#impact">Impact</a>
+    <a href="#experience">Experience</a>
+    <a href="#skills">Skills</a>
+    <a href="#deploy">Where it applies</a>
+  </div>
+</nav>
+
+<!-- ───────────────────────── HERO ───────────────────────── -->
+<header class="hero">
+  <div class="field"></div><div class="horizon"></div>
+  <div class="wrap">
+    <p class="tag">Professional dossier · <b>{{LOCATION}}</b> · {{AVAILABILITY}}</p>
+    <h1>{{FULL_NAME}}</h1>
+    <p class="pos">{{POSITIONING_ONELINE — one confident sentence; wrap the 2–3 most important words in <span class="mk">…</span>}}</p>
+    <!-- SIGNAL STRIP: 4 vital stats. Edit the labels/values to what the CV actually supports. -->
+    <div class="signal">
+      <div class="cell"><div class="k">Experience</div><div class="v">{{YEARS}}<small> yrs</small></div></div>
+      <div class="cell"><div class="k">Core domain</div><div class="v">{{CORE_DOMAIN}}</div></div>
+      <div class="cell"><div class="k">Headline metric</div><div class="v">{{HEADLINE_METRIC}}</div></div>
+      <div class="cell"><div class="k">Languages</div><div class="v">{{LANGUAGES}}</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- ───────────────────────── THESIS ───────────────────────── -->
+<section id="thesis">
+  <div class="wrap reveal">
+    <p class="eyebrow">// career thesis</p>
+    <p class="thesis">{{THESIS — 3–5 sentences on the through-line of the career: what kind of problems this person is built to solve and the proof. Wrap key phrases in <span class="mk">…</span>.}}</p>
+  </div>
+</section>
+
+<!-- ───────────────────────── IMPACT ───────────────────────── -->
+<section id="impact">
+  <div class="wrap reveal">
+    <p class="eyebrow">// impact at a glance</p>
+    <h2 class="title">The numbers that matter</h2>
+    <p class="lead">Only metrics confirmed during the interview. Each is traceable to a role below.</p>
+    <div class="stats" style="margin-top:34px">
+      <!-- REPEAT:stat (3–5). data-target = the real number; .suf = unit/prefix shown beside it.
+           IMPORTANT: the span's visible TEXT must equal data-target (not 0) so the real figure
+           still shows if JS is off; the script resets it to 0 and counts up only on scroll. -->
+      <div class="stat"><div class="num"><span data-target="40">40</span><span class="suf">%</span></div><div class="lbl">{{WHAT_THIS_MEASURES}}</div></div>
+      <div class="stat"><div class="num"><span class="suf">€</span><span data-target="2">2</span><span class="suf">M</span></div><div class="lbl">{{WHAT_THIS_MEASURES}}</div></div>
+      <div class="stat"><div class="num"><span data-target="12">12</span></div><div class="lbl">{{WHAT_THIS_MEASURES}}</div></div>
+      <div class="stat"><div class="num"><span data-target="3">3</span><span class="suf">×</span></div><div class="lbl">{{WHAT_THIS_MEASURES}}</div></div>
+      <!-- /REPEAT:stat -->
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── EXPERIENCE ───────────────────────── -->
+<section id="experience">
+  <div class="wrap reveal">
+    <p class="eyebrow">// experience</p>
+    <h2 class="title">The track record</h2>
+    <div class="track" style="margin-top:34px">
+      <!-- REPEAT:role (newest first) -->
+      <article class="role">
+        <span class="when">{{START}} — {{END}}</span>
+        <h3>{{ROLE_TITLE}}</h3>
+        <span class="org">{{EMPLOYER}}{{ · optional: team / scope}}</span>
+        <p class="ctx">{{CONTEXT — the situation: what the org needed, the scope, who you worked with. From the interview, not just the CV line.}}</p>
+        <p class="impact">{{IMPACT — what changed because of you, quantified where possible. No invented numbers.}}</p>
+        <div class="stack"><span>{{TECH_OR_SKILL}}</span><span>{{TECH_OR_SKILL}}</span><span>{{TECH_OR_SKILL}}</span></div>
+      </article>
+      <!-- /REPEAT:role -->
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── SKILLS → EVIDENCE ───────────────────────── -->
+<section id="skills">
+  <div class="wrap reveal">
+    <p class="eyebrow">// capabilities, with proof</p>
+    <h2 class="title">Skills tied to evidence</h2>
+    <p class="lead">No naked skill lists — every capability points to the work that proves it.</p>
+    <div class="skillgrid" style="margin-top:34px">
+      <!-- REPEAT:sgroup -->
+      <div class="sgroup">
+        <span class="dom">{{DOMAIN}}</span>
+        <h3>{{SKILL_GROUP_NAME}}</h3>
+        <ul>
+          <li>{{SKILL}}<span class="ev">{{where it was used / what it produced}}</span></li>
+          <li>{{SKILL}}<span class="ev">{{where it was used / what it produced}}</span></li>
+        </ul>
+      </div>
+      <!-- /REPEAT:sgroup -->
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── PROJECTS ───────────────────────── -->
+<section id="projects">
+  <div class="wrap reveal">
+    <p class="eyebrow">// selected work</p>
+    <h2 class="title">Projects worth opening</h2>
+    <div class="projects" style="margin-top:34px">
+      <!-- REPEAT:proj -->
+      <article class="proj">
+        <h3>{{PROJECT_NAME}}</h3>
+        <p class="row"><b>Problem</b>{{the problem it solved}}</p>
+        <p class="row"><b>Approach</b>{{what you did}}</p>
+        <p class="row"><b>Result</b>{{the outcome — measurable if known}}</p>
+      </article>
+      <!-- /REPEAT:proj -->
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── DEPLOYMENT MAP (signature) ───────────────────────── -->
+<section id="deploy">
+  <div class="wrap reveal">
+    <p class="eyebrow">// where this applies</p>
+    <h2 class="title">Deployment map</h2>
+    <p class="lead">Each capability cluster, and the roles, industries, and problem-classes it's the strongest evidence for — with why.</p>
+    <div class="deploy" style="margin-top:34px">
+      <!-- REPEAT:drow -->
+      <div class="drow">
+        <div class="cap">
+          <span class="name">{{CAPABILITY_CLUSTER}}</span>
+          <span class="from">from: {{which roles/projects build it}}</span>
+        </div>
+        <div class="to">
+          <div class="tags"><span>{{ROLE_OR_INDUSTRY}}</span><span>{{ROLE_OR_INDUSTRY}}</span><span>{{PROBLEM_CLASS}}</span></div>
+          <p class="why"><b>Why:</b> {{the reasoning — what in the track record makes this person a strong, not generic, fit for those targets}}</p>
+        </div>
+      </div>
+      <!-- /REPEAT:drow -->
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── CREDENTIALS ───────────────────────── -->
+<section id="credentials">
+  <div class="wrap reveal">
+    <p class="eyebrow">// education &amp; credentials</p>
+    <h2 class="title">Formal record</h2>
+    <div class="creds" style="margin-top:30px">
+      <!-- REPEAT:cred -->
+      <div class="cred"><span class="when">{{YEAR}}</span><h3>{{QUALIFICATION}}</h3><span class="org">{{INSTITUTION}}</span></div>
+      <!-- /REPEAT:cred -->
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── FOOTER / TRACE ───────────────────────── -->
+<footer>
+  <div class="wrap reveal">
+    <p class="eyebrow">// provenance</p>
+    <div class="trace">
+      <b>How this profile was built:</b> generated from {{FULL_NAME}}'s CV and a clarifying interview on {{DATE}}.
+      Every claim above was confirmed in that interview; nothing was invented. The underlying CV and any personal
+      contact details stay on the local machine and are not published here.
+    </div>
+    <p style="margin-top:22px">{{FULL_NAME}} · {{CONTACT_OR_HANDLE — optional; omit if the user wants no contact details on the page}}</p>
+  </div>
+</footer>
+
+<script>
+  // progress bar + sticky nav
+  var prog=document.getElementById('progress'), nav=document.getElementById('topnav');
+  function onScroll(){
+    var h=document.documentElement, max=h.scrollHeight-h.clientHeight;
+    var p=max>0?(h.scrollTop||document.body.scrollTop)/max:0;
+    prog.style.width=(p*100)+'%';
+    if((window.scrollY||0)>520) nav.classList.add('show'); else nav.classList.remove('show');
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // scroll-reveal
+  if('IntersectionObserver' in window && !reduce){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    },{threshold:.12});
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  } else { document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
+
+  // count-up
+  function countUp(el){
+    var target=parseFloat(el.getAttribute('data-target')), dur=1100, t0=null;
+    var dp=(target%1!==0)?1:0;
+    el.textContent=(0).toFixed(dp); // real number was in the DOM for no-JS; now animate up from 0
+    function step(ts){ if(!t0)t0=ts; var k=Math.min((ts-t0)/dur,1);
+      var eased=k*k*(3-2*k); // smoothstep 0→1
+      el.textContent=(target*eased).toFixed(dp);
+      if(k<1) requestAnimationFrame(step); else el.textContent=target.toFixed(dp); }
+    requestAnimationFrame(step);
+  }
+  var nums=document.querySelectorAll('[data-target]');
+  if('IntersectionObserver' in window && !reduce){
+    var io2=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ countUp(e.target); io2.unobserve(e.target); } });
+    },{threshold:.6});
+    nums.forEach(function(el){ io2.observe(el); });
+  } else { nums.forEach(function(el){ el.textContent=parseFloat(el.getAttribute('data-target')).toString(); }); }
+</script>
+</body>
+</html>

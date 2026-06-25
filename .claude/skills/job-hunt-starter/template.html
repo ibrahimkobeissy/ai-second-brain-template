@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--
+  ============================================================================
+  job-hunt-starter · DASHBOARD TEMPLATE  ("Operator's Dossier", command-center)
+  ----------------------------------------------------------------------------
+  Filled by job-hunt-starter from a real disk scan → hunter/personal-profile/starter.html.
+  WHEN FILLING:
+   • Replace every {{SLOT}} from the actual scan. Never fake a green status.
+   • Status chip per step: pick ONE class — .st-done / .st-nudge / .st-wake — and matching label.
+   • {{READINESS}} = integer 0–100; set --pct inline on .ring for the arc.
+   • <!-- REPEAT:step --> clones per workflow step. Keep <style>/<script> intact.
+  ============================================================================
+-->
+<title>Job Hunt — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0C1A1E; --ink-2:#102A30; --ink-3:#091316;
+    --paper:#EFE7D6; --brass:#C9A24B; --brass-line:rgba(201,162,75,.32);
+    --teal:#5FB7A8; --amber:#E0A23B; --rose:#E0685F;
+    --text:#E8EFEC; --muted:#90A6A3; --line:#1E3A40; --radius:14px; --maxw:980px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:var(--text);font-family:"Hanken Grotesk",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  section{padding:54px 0}
+  .eyebrow{font-family:"Space Mono",monospace;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--brass);margin:0 0 14px}
+  /* hero */
+  .hero{padding:72px 0 36px;border-bottom:1px solid var(--line);background:radial-gradient(60% 80% at 80% 0%,rgba(201,162,75,.1),transparent)}
+  .hero .row{display:flex;align-items:center;gap:34px;flex-wrap:wrap}
+  .hero h1{font-size:clamp(2rem,5vw,3.2rem);margin:.1em 0}
+  .hero .coach{color:var(--paper);font-size:1.1rem;max-width:520px}
+  .ring{--pct:0;width:128px;height:128px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    background:conic-gradient(var(--brass) calc(var(--pct)*1%), var(--ink-2) 0);position:relative}
+  .ring::before{content:"";position:absolute;inset:10px;border-radius:50%;background:var(--ink)}
+  .ring .pct{position:relative;font-family:"Bricolage Grotesque";font-weight:800;font-size:1.9rem}
+  .ring .pct small{display:block;font-family:"Space Mono",monospace;font-size:.6rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;text-align:center}
+  /* stats strip */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .stat{background:var(--ink-2);padding:18px 20px}
+  .stat .v{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.5rem;color:var(--brass)}
+  .stat .l{font-family:"Space Mono",monospace;font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:4px}
+  /* next action */
+  .next{background:rgba(201,162,75,.1);border:1px solid var(--brass-line);border-radius:var(--radius);padding:22px 24px;margin-top:8px}
+  .next .k{font-family:"Space Mono",monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--brass)}
+  .next h3{margin:6px 0 0;font-size:1.25rem}
+  /* checklist */
+  .step{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start;background:var(--ink-2);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:12px}
+  .step .num{font-family:"Space Mono",monospace;color:var(--muted);font-size:.74rem}
+  .step h3{margin:4px 0 4px;font-size:1.08rem}
+  .step .detail{color:var(--muted);font-size:.9rem}
+  .step .coach{color:var(--paper);font-size:.9rem;margin-top:8px;font-style:italic}
+  .chip{font-family:"Space Mono",monospace;font-size:.72rem;font-weight:700;padding:5px 12px;border-radius:999px;border:1px solid;white-space:nowrap}
+  .st-done{color:var(--teal);border-color:rgba(95,183,168,.5);background:rgba(95,183,168,.08)}
+  .st-nudge{color:var(--amber);border-color:rgba(224,162,59,.5);background:rgba(224,162,59,.08)}
+  .st-wake{color:var(--rose);border-color:rgba(224,104,95,.5);background:rgba(224,104,95,.1)}
+  .hub{display:grid;gap:10px}
+  .hubrow{display:flex;gap:12px;align-items:center;background:var(--ink-2);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px}
+  .hubrow .detail{color:var(--muted);font-size:.9rem}
+  footer{border-top:1px solid var(--line);padding:30px 0 60px;color:var(--muted);font-size:.82rem;font-family:"Space Mono",monospace}
+  @media(max-width:680px){.stats{grid-template-columns:repeat(2,1fr)}.hero .row{gap:20px}}
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="wrap row">
+  <div class="ring" style="--pct:{{READINESS}}"><div class="pct">{{READINESS}}%<small>ready</small></div></div>
+  <div>
+    <p class="eyebrow">// job-hunt command center · {{DATE}}</p>
+    <h1>Where you stand</h1>
+    <p class="coach">{{one-line honest coach nudge — celebrate or push, based on readiness}}</p>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <div class="stats">
+    <div class="stat"><div class="v">{{STORIES_N}}</div><div class="l">stories banked</div></div>
+    <div class="stat"><div class="v">{{COMPANIES_N}}</div><div class="l">companies scouted</div></div>
+    <div class="stat"><div class="v">{{DEBRIEFS_N}}</div><div class="l">interviews debriefed</div></div>
+    <div class="stat"><div class="v">{{LAST_ACTIVITY}}</div><div class="l">last activity</div></div>
+  </div>
+  <div class="next">
+    <span class="k">do this next</span>
+    <h3>{{single next best action — the one thing that unblocks the most}}</h3>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="eyebrow">// the workflow</p>
+  <!-- REPEAT:step — one per: cv.md · portfolio · story bank · interview prep · mock practice · scout a company · debrief -->
+  <div class="step">
+    <div>
+      <div class="num">{{STEP_CODE e.g. S1·spine}}</div>
+      <h3>{{step name}}</h3>
+      <div class="detail">{{what the scan found — e.g. "12 stories, last added 3 days ago" or "not started"}}</div>
+      <div class="coach">{{coach line — punchy; push if skipped, credit if done}}</div>
+    </div>
+    <span class="chip {{st-done|st-nudge|st-wake}}">{{DONE | GETTING DUSTY | DO THIS NEXT}}</span>
+  </div>
+  <!-- /REPEAT:step -->
+</div></section>
+
+<section><div class="wrap">
+  <p class="eyebrow">// the career-ops hub</p>
+  <div class="hub">
+    <div class="hubrow"><span class="chip {{st-done|st-wake}}">{{INSTALLED | NOT SET UP}}</span><div class="detail">career-ops at {{path}} · `cv.md` {{symlinked | not linked}}</div></div>
+    <div class="hubrow"><span class="chip {{st-done|st-nudge|st-wake}}">{{profile.yml OK | HALF-FILLED | MISSING}}</span><div class="detail">{{config/profile.yml — generated + logical? leftover TODOs? · run job-hunt-careerops-profile if missing}}</div></div>
+    <div class="hubrow"><span class="chip {{st-done|st-wake}}">{{applications.md OK | NONE YET}}</span><div class="detail">{{the tracker — career-ops creates it on the first pipeline/eval; needed for the dashboard}}</div></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">snapshot generated {{DATE}} by job-hunt-starter · re-run anytime for a fresh pulse · data stays private</div></footer>
+
+</body>
+</html>

@@ -13,12 +13,12 @@ The small set of rules that keep the vault consistent and retrievable. Keep it l
 ## Frontmatter (universal)
 Every note carries:
 
-| field | values | notes |
-| :-- | :-- | :-- |
-| `type` | evergreen · literature · source · reference · moc · daily · draft · scout · synthesis | what *kind* of note it is (use `literature` for short sources like articles/tweets, and `source` for deep, structured breakdowns of books/papers) |
-| `status` | inbox · draft · active · synthesized · archived | lifecycle state — the key retrieval dimension |
-| `created` | `YYYY-MM-DD` | always this format, everywhere |
-| `tags` | list | see Tags below |
+| field     | values                                                                                | notes                                                                                                                                             |
+| :-------- | :------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `type`    | evergreen · literature · source · reference · moc · daily · draft · scout · synthesis | what *kind* of note it is (use `literature` for short sources like articles/tweets, and `source` for deep, structured breakdowns of books/papers) |
+| `status`  | inbox · draft · active · synthesized · archived                                       | lifecycle state — the key retrieval dimension                                                                                                     |
+| `created` | `YYYY-MM-DD`                                                                          | always this format, everywhere                                                                                                                    |
+| `tags`    | list                                                                                  | see Tags below                                                                                                                                    |
 
 Contextual fields when they apply: `area` (owning Area), `source` + `captured_from` (captured notes), `synthesized_into` (a draft folded into a synthesis).
 

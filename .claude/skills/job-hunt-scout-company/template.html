@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--
+  ============================================================================
+  job-hunt-scout-company · DOSSIER TEMPLATE  ("Operator's Dossier", company-facing)
+  ----------------------------------------------------------------------------
+  Copied to hunter/scouted-companies/<company>/dossier.html and filled from research.
+  WHEN FILLING:
+   • Replace every {{SLOT}} with sourced facts. Cite sources (Provenance section).
+   • <!-- REPEAT:x --> … <!-- /REPEAT:x --> blocks clone once per item.
+   • NEVER present a guess as fact — mark unverified items. No fabricated fit.
+   • Keep <style>/<script> intact; edit content only.
+  Fit-grade badge classes: .g-a/.g-b = good · .g-c = mixed · .g-d/.g-f = weak.
+  Me-vs status chips: .s-strong · .s-partial · .s-gap.
+  ============================================================================
+-->
+<title>{{COMPANY}} — Interview Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0C1A1E; --ink-2:#102A30; --ink-3:#091316;
+    --paper:#EFE7D6; --brass:#C9A24B; --brass-soft:rgba(201,162,75,.14); --brass-line:rgba(201,162,75,.32);
+    --teal:#5FB7A8; --amber:#E0A23B; --rose:#E0685F;
+    --text:#E8EFEC; --muted:#90A6A3; --line:#1E3A40;
+    --radius:14px; --shadow:0 18px 50px rgba(0,0,0,.45); --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--ink);color:var(--text);font-family:"Hanken Grotesk",system-ui,sans-serif;line-height:1.62;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3{font-family:"Bricolage Grotesque","Hanken Grotesk",sans-serif;font-weight:800;line-height:1.1;letter-spacing:-.02em}
+  a{color:var(--brass)}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  section{padding:80px 0;position:relative}
+  .eyebrow{font-family:"Space Mono",monospace;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--brass);display:inline-flex;gap:9px;align-items:center;margin:0 0 16px}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--brass);display:inline-block}
+  h2.title{font-size:clamp(1.6rem,3.6vw,2.4rem);margin:0 0 10px}
+  .lead{color:var(--muted);font-size:1.04rem;max-width:680px;margin:0}
+  #progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--brass);z-index:60;transition:width .08s linear}
+  nav.top{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(10px);background:rgba(9,19,22,.78);border-bottom:1px solid var(--line);transform:translateY(-100%);transition:transform .35s ease}
+  nav.top.show{transform:translateY(0)}
+  nav.top .wrap{display:flex;align-items:center;gap:6px;padding:12px 24px;flex-wrap:wrap}
+  nav.top .brand{font-family:"Bricolage Grotesque";font-weight:800;margin-right:auto;font-size:1rem}
+  nav.top a{color:var(--muted);font-size:.78rem;font-family:"Space Mono",monospace;padding:5px 11px;border-radius:999px;text-decoration:none}
+  nav.top a:hover{color:var(--text);background:var(--ink-2)}
+  /* hero */
+  .hero{min-height:88vh;display:flex;align-items:center;overflow:hidden}
+  .hero .field{position:absolute;inset:0;opacity:.5;background:radial-gradient(70% 55% at 18% 18%,rgba(95,183,168,.12),transparent 60%),radial-gradient(60% 55% at 88% 82%,rgba(201,162,75,.13),transparent 60%),repeating-linear-gradient(0deg,transparent 0 38px,rgba(95,183,168,.045) 38px 39px),repeating-linear-gradient(90deg,transparent 0 38px,rgba(95,183,168,.045) 38px 39px)}
+  .hero .wrap{position:relative;z-index:2}
+  .hero .tag{font-family:"Space Mono",monospace;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 18px}
+  .hero h1{font-size:clamp(2.4rem,7vw,5rem);margin:0 0 .1em}
+  .hero .what{font-size:clamp(1.05rem,2.4vw,1.45rem);color:var(--paper);max-width:720px;font-weight:500}
+  .gradebox{display:flex;gap:16px;align-items:center;margin-top:30px;flex-wrap:wrap}
+  .grade{font-family:"Bricolage Grotesque";font-weight:800;font-size:2.4rem;width:78px;height:78px;display:flex;align-items:center;justify-content:center;border-radius:18px;border:2px solid}
+  .g-a,.g-b{color:var(--teal);border-color:var(--teal);background:rgba(95,183,168,.1)}
+  .g-c{color:var(--amber);border-color:var(--amber);background:rgba(224,162,59,.1)}
+  .g-d,.g-f{color:var(--rose);border-color:var(--rose);background:rgba(224,104,95,.1)}
+  .gradebox .g-label{font-family:"Space Mono",monospace;font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+  .gradebox .g-label b{display:block;font-family:"Bricolage Grotesque";font-size:1.05rem;color:var(--text);margin-top:4px;letter-spacing:normal;text-transform:none}
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  .grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
+  .card{background:var(--ink-2);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .card h3{margin:0 0 8px;font-size:1.05rem}
+  .card p{margin:0;color:var(--muted);font-size:.94rem}
+  .k{font-family:"Space Mono",monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--brass)}
+  .src{font-family:"Space Mono",monospace;font-size:.72rem;color:var(--muted);margin-top:8px;display:block}
+  .src a{color:var(--teal)}
+  /* voice cards */
+  .voice{background:var(--ink-2);border:1px solid var(--line);border-left:2px solid var(--brass);border-radius:0 var(--radius) var(--radius) 0;padding:20px}
+  .voice .rating{font-family:"Bricolage Grotesque";font-weight:800;color:var(--brass);font-size:1.1rem}
+  .voice blockquote{margin:10px 0 0;color:var(--paper);font-size:.95rem;font-style:italic}
+  .toverify{font-size:.8rem;color:var(--amber);font-family:"Space Mono",monospace;margin-top:8px}
+  /* me-vs matrix */
+  .matrix{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:8px}
+  .mrow{display:grid;grid-template-columns:1fr 1.3fr 120px;gap:0;background:var(--ink-2)}
+  .mrow.head{background:var(--ink-3);font-family:"Space Mono",monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .mrow>div{padding:15px 16px;border-right:1px solid var(--line)}
+  .mrow>div:last-child{border-right:none;display:flex;align-items:center}
+  .mrow .req{color:var(--paper);font-weight:600;font-size:.92rem}
+  .mrow .ev{color:var(--muted);font-size:.9rem}
+  .chip{font-family:"Space Mono",monospace;font-size:.72rem;font-weight:700;padding:4px 11px;border-radius:999px;border:1px solid}
+  .s-strong{color:var(--teal);border-color:rgba(95,183,168,.5);background:rgba(95,183,168,.08)}
+  .s-partial{color:var(--amber);border-color:rgba(224,162,59,.5);background:rgba(224,162,59,.08)}
+  .s-gap{color:var(--rose);border-color:rgba(224,104,95,.5);background:rgba(224,104,95,.08)}
+  /* lists */
+  ul.clean{list-style:none;padding:0;margin:14px 0 0}
+  ul.clean li{padding:12px 16px;background:var(--ink-2);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;font-size:.95rem}
+  ul.clean li b{color:var(--paper)}
+  .defend{border-left:2px solid var(--rose)}
+  .ask{border-left:2px solid var(--teal)}
+  .prov{font-family:"Space Mono",monospace;font-size:.82rem;color:var(--muted)}
+  .prov li{margin-bottom:7px}
+  footer{border-top:1px solid var(--line);padding:40px 0 64px;color:var(--muted);font-size:.86rem}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}.mrow{grid-template-columns:1fr}.mrow>div{border-right:none;border-bottom:1px solid var(--line)}section{padding:60px 0}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}html{scroll-behavior:auto}}
+</style>
+<noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
+</head>
+<body>
+<div id="progress"></div>
+<nav class="top" id="topnav"><div class="wrap">
+  <span class="brand">{{COMPANY}} · Dossier</span>
+  <a href="#company">Company</a><a href="#voice">Employees</a><a href="#role">Role</a><a href="#fit">Me vs them</a><a href="#ask">Ask them</a>
+</div></nav>
+
+<!-- 1 · VERDICT HERO -->
+<header class="hero">
+  <div class="field"></div>
+  <div class="wrap">
+    <p class="tag">Interview dossier · {{DATE}} · role: {{ROLE}}</p>
+    <h1>{{COMPANY}}</h1>
+    <p class="what">{{ONE_LINE_WHAT_THEY_DO}}</p>
+    <div class="gradebox">
+      <div class="grade {{g-a|g-b|g-c|g-d|g-f}}">{{A|B|C|D|F}}</div>
+      <div class="g-label">My fit for this role<b>{{one-line verdict — honest}}</b></div>
+    </div>
+  </div>
+</header>
+
+<!-- 2 · THE COMPANY -->
+<section id="company"><div class="wrap reveal">
+  <p class="eyebrow">// the company</p>
+  <h2 class="title">What they actually do</h2>
+  <div class="grid g2" style="margin-top:30px">
+    <div class="card"><span class="k">Business</span><h3>{{what they sell / model}}</h3><p>{{size · stage · funding}}</p><span class="src">source: <a href="{{URL}}">{{source}}</a></span></div>
+    <div class="card"><span class="k">Recent moves</span><h3>{{latest, dated}}</h3><p>{{funding / launches / layoffs — dated}}</p><span class="src">source: <a href="{{URL}}">{{source}}</a></span></div>
+  </div>
+</div></section>
+
+<!-- 3 · VOICE OF THE EMPLOYEES -->
+<section id="voice"><div class="wrap reveal">
+  <p class="eyebrow">// voice of the employees</p>
+  <h2 class="title">What it's like inside</h2>
+  <p class="lead">Glassdoor / Blind themes — quoted and sourced. Thin or one-off signals are flagged "to verify".</p>
+  <div class="grid g2" style="margin-top:30px">
+    <!-- REPEAT:voice -->
+    <div class="voice">
+      <span class="rating">{{★ rating / theme}}</span>
+      <blockquote>{{representative quote or summarized theme}}</blockquote>
+      <span class="src">source: <a href="{{URL}}">{{Glassdoor/Blind}}</a></span>
+      <div class="toverify">{{to verify: … (omit if solid)}}</div>
+    </div>
+    <!-- /REPEAT:voice -->
+  </div>
+</div></section>
+
+<!-- 4 · THE ROLE -->
+<section id="role"><div class="wrap reveal">
+  <p class="eyebrow">// the role</p>
+  <h2 class="title">{{ROLE}} — the real job</h2>
+  <div class="grid g3" style="margin-top:30px">
+    <div class="card"><span class="k">Must-haves</span><ul class="clean"><li>{{…}}</li></ul></div>
+    <div class="card"><span class="k">Nice-to-haves</span><ul class="clean"><li>{{…}}</li></ul></div>
+    <div class="card"><span class="k">Behind the buzzwords</span><p>{{what this job really is, day to day}}</p></div>
+  </div>
+</div></section>
+
+<!-- 5 · ME VS THEM -->
+<section id="fit"><div class="wrap reveal">
+  <p class="eyebrow">// me vs. them</p>
+  <h2 class="title">Match matrix</h2>
+  <p class="lead">Each JD requirement → my real evidence → honest status. Gaps are what I prep for.</p>
+  <div class="matrix">
+    <div class="mrow head"><div>Requirement</div><div>My evidence</div><div>Status</div></div>
+    <!-- REPEAT:match -->
+    <div class="mrow"><div class="req">{{requirement}}</div><div class="ev">{{evidence from cv.md / my-stories.md}}</div><div><span class="chip {{s-strong|s-partial|s-gap}}">{{strong|partial|gap}}</span></div></div>
+    <!-- /REPEAT:match -->
+  </div>
+</div></section>
+
+<!-- 6 · STRONG POINTS -->
+<section id="strong"><div class="wrap reveal">
+  <p class="eyebrow">// lead with these</p>
+  <h2 class="title">Strong points</h2>
+  <ul class="clean" style="margin-top:24px">
+    <!-- REPEAT:strong -->
+    <li><b>{{strength}}</b> — {{the story/evidence to tell, from my-stories.md}}</li>
+    <!-- /REPEAT:strong -->
+  </ul>
+</div></section>
+
+<!-- 7 · WEAK POINTS & DEFENSE -->
+<section id="weak"><div class="wrap reveal">
+  <p class="eyebrow">// they'll probe these</p>
+  <h2 class="title">Weak points &amp; how to defend</h2>
+  <ul class="clean" style="margin-top:24px">
+    <!-- REPEAT:weak -->
+    <li class="defend"><b>{{gap they'll probe}}</b> — {{honest framing / mitigation — no fabrication}}</li>
+    <!-- /REPEAT:weak -->
+  </ul>
+</div></section>
+
+<!-- 8 · QUESTIONS TO ASK THEM -->
+<section id="ask"><div class="wrap reveal">
+  <p class="eyebrow">// turn the tables</p>
+  <h2 class="title">Questions to ask them</h2>
+  <ul class="clean" style="margin-top:24px">
+    <!-- REPEAT:question -->
+    <li class="ask">{{sharp, company-specific question}}</li>
+    <!-- /REPEAT:question -->
+  </ul>
+</div></section>
+
+<!-- 9 · PROVENANCE -->
+<footer><div class="wrap reveal">
+  <p class="eyebrow">// provenance</p>
+  <p>Researched {{DATE}} for the {{ROLE}} interview. Every claim links to its source; unverified items are flagged. Data stays private.</p>
+  <ul class="prov" style="margin-top:12px">
+    <!-- REPEAT:source --><li><a href="{{URL}}">{{source title}}</a></li><!-- /REPEAT:source -->
+  </ul>
+</div></footer>
+
+<script>
+  var prog=document.getElementById('progress'),nav=document.getElementById('topnav');
+  function onScroll(){var h=document.documentElement,max=h.scrollHeight-h.clientHeight,p=max>0?(h.scrollTop||document.body.scrollTop)/max:0;prog.style.width=(p*100)+'%';if((window.scrollY||0)>520)nav.classList.add('show');else nav.classList.remove('show');}
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if('IntersectionObserver' in window && !reduce){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});}
+  else{document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});}
+</script>
+</body>
+</html>
