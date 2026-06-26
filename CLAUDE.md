@@ -90,6 +90,7 @@ Located in `.claude/skills/`.
 - **`vault-linter`**: Read-only knowledge-graph integrity check — broken links, orphans, missing traceability.
 - **`productize-*`**: Six phase orchestrator skills (`productize-new`/`-analyze`/`-decide`/`-build`/`-report`/`-plan`) taking an Area idea through intake → PRD → analysis → Go/No-Go → build specs → capstone report, plus three component skills they invoke (`productize-intake`, `productize-prd`, `productize-analysis-slip`) and `productize-linter`. User docs live at `vault/99-system/documentation/productize.md`; shared developer assets (catalogs, templates, methods, `conventions.md`) live in `.claude/skills/productize/`.
 - **`job-hunt-*`**: A personal job-hunt toolset for the `02-personal/areas/job-hunt` Area, built on **[career-ops](https://github.com/santifer/career-ops) as the execution hub** — the `job-hunt-*` skills *feed* it (produce its inputs) and *beautify* what it can't. `job-hunt-cv-from-doc` (CV → `cv.md` spine) · `-careerops-profile` / `-careerops-portals` (generate career-ops' `profile.yml` / `portals.yml`) · `-craft-profile` (CV → portfolio HTML) · `-capture-story` (STAR story diary) · `-interview-prep` (story-backed Q&A) · `-mock-interview` (scored drill) · `-scout-company` (company dossier HTML + me-vs matrix) · `-interview-debrief` (post-interview retro) · `-starter` (`starter.html` progress dashboard). The personal outputs (CV, stories, dossiers under `hunter/`) are private data that stays in your own vault — this template ships the **skills + an empty folder scaffold only**. User manual: `vault/99-system/documentation/job-hunt-toolset.md`.
+- **`calibrate-comms`**: Profiles how the user wants agents to write across nine communication axes, validates those preferences with sample-reaction tests, and compiles them into the `COMMS-PROFILE` block in §12. Re-runnable; calibration, not classification. Ledger: `vault/99-system/communication-profile/<user>.md`.
 
 ## 10. Security Guardrails
 
@@ -111,3 +112,10 @@ Agents (Claude **and** Codex) operate **inside the project directory** (`<YOUR-P
 - **Session hook:** `.claude/hooks/pending-reviews.sh` surfaces Claude's pending Todo reviews at startup. Codex startup check: `bash .claude/hooks/pending-reviews.sh Codex`.
 - **Codex review commands:** `codex review --uncommitted` for local changes; use `codex exec --sandbox read-only ...` for read-only reviewer drills.
 - **Settings:** `.claude/settings.json` (Claude) — permissions, hooks. Codex reads `AGENTS.md` for project instructions and `.codex/rules/default.rules` for verified project execpolicy. No repo-local Codex hooks/config are load-bearing.
+
+## 12. Communication Profile (How to Write to This User)
+
+How this user wants agents to write is calibrated by the `calibrate-comms` skill and persisted in the delimited block below, which loads every session and binds Claude and Codex. Until the user runs `/calibrate-comms`, the block stays empty and agents use sensible defaults. This block is personal data: public copies of the template must ship the empty placeholder, never a filled profile. Only `calibrate-comms` (or the user) edits content between the markers.
+
+<!-- COMMS-PROFILE:START -->
+<!-- COMMS-PROFILE:END -->

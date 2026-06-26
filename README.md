@@ -17,8 +17,18 @@ Most "second brain" setups rot: you capture endlessly and synthesize never. This
 - **🧩 A toolbelt of skills** (slash commands) that automate the boring parts.
 - **🗂️ ARA structure** (Areas / Resources / Archive) with a hard wall between Work, Personal, and Resources to stop context bleed.
 - **🔗 Link-first**: value lives in the `[[wikilinks]]`, surfaced on a live dashboard.
+- **🗣️ Calibrated to you**: a one-time `calibrate-comms` test teaches the agents *how you want to be written to*, so output never lands as "too long" or "too terse".
 - **🛡️ Security guardrails** that stop agents from reading or exfiltrating your secrets (SSH keys, `.env`, cloud credentials, shell history).
 - **🤝 Dual-agent peer review**: one agent builds a tool, the other challenges and hardens it before it ships.
+
+## 🚀 Quickstart
+
+1. **Use this template** (or clone the repo).
+2. Open the `vault/` folder in **Obsidian** and enable the bundled community plugins: **Kanban**, **Tasks**, **Mermaid Tools**, **mdmenu**.
+3. Install **[Claude Code](https://claude.com/claude-code)** (and/or Codex) and open the repo as your project — the agent reads `CLAUDE.md` automatically (Codex reads it via the `AGENTS.md` symlink).
+4. **Calibrate how the agents write to you:** `/calibrate-comms` — a 5-minute test so every doc afterward matches your style.
+5. Create your first Area: `/init-area`.
+6. Drop a link into `vault/00-inbox/`, then run `/curate-bookmarks` → `/synthesize-drafts` → `/plan-to-kanban`.
 
 ## 🔁 The Operating Loop
 
@@ -50,6 +60,7 @@ flowchart LR
 
 Run these as slash commands in Claude Code (or via the Skill tool); Codex invokes the same skills with `$skill`:
 
+- **`/calibrate-comms`** — *run this first.* Profile how you want the agents to write to you — length, structure, visuals, jargon, tone — and persist those directives to `CLAUDE.md` so every agent matches your brain. Calibration, not personality typing.
 - **`/init-area`** — scaffold a new Area: challenge the idea, define goals/scope, create the hub note, Kanban board, and triage queue.
 - **`/curate-bookmarks`** — turn inbox captures into per-Area "what can we steal" drafts; judge each link independently; log the source.
 - **`/scout-idea`** — challenge an idea's value, then run a broad discovery sweep for tools/OSS/articles when you have no bookmarks yet.
@@ -88,17 +99,10 @@ Everything orbits one spine — your `cv.md` — which every skill (and career-o
 - 📖 **How to run it, step by step:** [Job-Hunt toolset manual](vault/99-system/documentation/job-hunt-toolset.md) — the full journey, the vault ↔ career-ops switching points, and the flywheel that makes every interview sharpen the next.
 - 📂 **The scaffold to fill:** the [`job-hunt` Area](vault/02-personal/areas/job-hunt/) — the ready-to-use structure (`hunter/`, `draft/`, `scout/`, `synthesis/`) you drop your own CV into.
 
-## 🚀 Quickstart
-
-1. **Use this template** (or clone the repo).
-2. Open the `vault/` folder in **Obsidian** and enable the bundled community plugins: **Kanban**, **Tasks**, **Mermaid Tools**, **mdmenu**.
-3. Install **[Claude Code](https://claude.com/claude-code)** (and/or Codex) and open the repo as your project — the agent reads `CLAUDE.md` automatically (Codex reads it via the `AGENTS.md` symlink).
-4. Create your first Area: `/init-area`.
-5. Drop a link into `vault/00-inbox/`, then run `/curate-bookmarks` → `/synthesize-drafts` → `/plan-to-kanban`.
-
 ## 📚 Documentation
 
 - **[Operating System doc](vault/99-system/documentation/second-brain-operating-system.md)** — the full philosophy, the loop, peer review, and the complete skill reference.
+- **[Calibrate Comms](vault/99-system/documentation/calibrate-comms.md)** — the one-time test that tunes how the agents write to you (run it first).
 - **[Productize toolkit](vault/99-system/documentation/productize.md)** — the six-phase idea → build-specs pipeline, with the [StandupZero worked example](vault/99-system/documentation/productize-showcase.md).
 - **[Job-Hunt toolset](vault/99-system/documentation/job-hunt-toolset.md)** — the `job-hunt-*` skills + career-ops workflow: CV spine, story bank, interview prep, company dossiers, and progress dashboard.
 - **[Vault conventions](vault/99-system/documentation/conventions.md)** — frontmatter schema, tags, titles, link-before-close.

@@ -28,7 +28,7 @@ e.g. `… productize_lint.py vault/02-personal/areas/standup-tools/standupzero`.
 - **C1** unique ids per catalog · **C2** analysis `depends_on` resolve · **C3** decision `reads` resolve · **C4** deliverable `reads` resolve · **C5** analysis + deliverable graphs acyclic.
 
 **Product** (a generated `areas/<area>/<product>/`):
-- **P1** required frontmatter on each artifact · **P2** each analysis's `depends_on` equals the backtick analysis-ids its body consumes (no decorative or undeclared-but-used edge) · **P3** product analysis graph acyclic + deps resolve to present artifacts · **P4** `00-productization-plan.md` links resolve (no phantom links) · **P5** build gate — non-illustrative Phase-6 deliverables require a GO / CONDITIONAL GO in `05-go-no-go.md`.
+- **P1** required frontmatter on each artifact · **P2** each analysis's `depends_on` equals the backtick analysis-ids its body consumes (no decorative or undeclared-but-used edge) · **P3** product analysis graph acyclic + deps resolve to present artifacts · **P4** `00-productization-plan.md` links resolve (no phantom links) · **P5** build gate — non-illustrative Phase-6 deliverables require a GO / CONDITIONAL GO in `05-go-no-go.md` · **P6** the rendered `## Analysis plan` map matches the artifacts — same id set, each id's level band == its `depends_on`-derived level, and the `(standalone)` set == nodes with no deps and no dependents (skipped when no map is rendered yet).
 
 ## Using the output
 Run it after editing the catalogs, after a `productize-analyze` or `productize-build` run, or before trusting a product's graph. ERROR = fix before relying on the toolkit; the messages name the file and the exact violation. It diagnoses only — it never edits.

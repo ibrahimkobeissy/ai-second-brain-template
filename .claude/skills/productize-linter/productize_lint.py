@@ -26,6 +26,9 @@ Product checks (a generated areas/<area>/<product>/ folder):
   P4  00-productization-plan.md `[[links]]` resolve to files that exist (no phantom links)
   P5  build gate — if 05-go-no-go is not GO/CONDITIONAL GO, 06-deliverables must be empty
       or every deliverable explicitly `status: illustrative`
+  P6  the `## Analysis plan` map matches the artifacts: same id set, each id's level band ==
+      its `depends_on`-derived level (ASAP), and the `(standalone)` set == nodes with no deps
+      and no dependents (skipped when no map is rendered yet)
 """
 import re
 import sys
@@ -110,6 +113,46 @@ def acyclic(graph):
             return False, sorted(set(graph) - placed)
         placed |= set(layer)
     return True, []
+
+
+def asap_levels(graph):
+    """graph: {id: set(dep_ids)} (acyclic) → {id: level}, level = 0 if no deps else
+    1 + max(dep levels). This is the one map-layering algorithm (conventions → Analysis plan)."""
+    level = {}
+    def lvl(n):
+        if n not in level:
+            deps = graph[n] & set(graph)
+            level[n] = 0 if not deps else 1 + max(lvl(d) for d in deps)
+        return level[n]
+    for n in graph:
+        lvl(n)
+    return level
+
+
+def parse_analysis_plan(plan_text):
+    """Parse the rendered `## Analysis plan` ASCII map → (id_level, standalone) or None.
+
+    Reads the fenced code block under `## Analysis plan`. Tracks the current `LEVEL k`
+    band; an analysis token is `NN <id>` (`◄── NN` upstream refs are digits-only, so they
+    never match as ids). `(standalone)` attaches to the id token it immediately follows."""
+    m = re.search(r"##\s*Analysis plan\b.*?```(.*?)```", plan_text, re.S)
+    if not m:
+        return None
+    id_level, standalone, cur = {}, set(), None
+    for line in m.group(1).splitlines():
+        lm = re.search(r"\bLEVEL\s+(\d+)", line)
+        if lm:
+            cur = int(lm.group(1))
+        # id tokens and standalone tags, in left-to-right order on the line
+        last = None
+        for tok in re.finditer(r"(\d\d)\s+([a-z][a-z0-9-]*)|\((standalone)\)", line):
+            if tok.group(2):                       # an `NN <id>` token
+                last = tok.group(2)
+                if cur is not None:
+                    id_level[last] = cur
+            elif tok.group(3) and last is not None:  # a `(standalone)` tag
+                standalone.add(last)
+    return (id_level, standalone) if id_level else None
 
 
 # ============================ CATALOG MODE ============================
@@ -252,6 +295,39 @@ def lint_product(root, rep):
                         f"decision={rec or 'none'}; all {len(delivs)} deliverables marked illustrative")
     else:
         rep.add("PASS", "P5 build gate", "no deliverables yet")
+
+    # P6 Analysis-plan map parity: rendered map == artifacts (coverage, levels, standalone)
+    if plan.exists() and byid:
+        parsed = parse_analysis_plan(read(plan))
+        if parsed is None:
+            rep.add("WARN", "P6 analysis-plan map parity", "no rendered `## Analysis plan` map yet")
+        else:
+            map_level, map_standalone = parsed
+            graph = {aid: deps & known for aid, (_, deps, _) in byid.items()}
+            ok, _ = acyclic(graph)
+            problems = []
+            extra, miss = set(map_level) - known, known - set(map_level)
+            if extra:
+                problems.append(f"map lists absent analyses: {sorted(extra)}")
+            if miss:
+                problems.append(f"artifacts missing from map: {sorted(miss)}")
+            if ok:
+                true_level = asap_levels(graph)
+                deps_union = set().union(*graph.values()) if graph else set()
+                true_standalone = {n for n in known if not graph[n] and n not in deps_union}
+                bad_lvl = sorted(f"{i}: map L{map_level[i]} ≠ computed L{true_level[i]}"
+                                 for i in (set(map_level) & known) if map_level[i] != true_level[i])
+                if bad_lvl:
+                    problems.append("level mismatch — " + "; ".join(bad_lvl))
+                if map_standalone != true_standalone:
+                    problems.append(f"standalone mismatch — map={sorted(map_standalone)} "
+                                    f"computed={sorted(true_standalone)} "
+                                    f"(missing tag={sorted(true_standalone - map_standalone)}, "
+                                    f"wrong tag={sorted(map_standalone - true_standalone)})")
+            else:
+                problems.append("graph has a cycle (see P3) — level/standalone parity skipped")
+            rep.add("ERROR" if problems else "PASS", "P6 analysis-plan map parity",
+                    "\n".join(problems) if problems else "map matches artifacts")
 
 
 def main():
