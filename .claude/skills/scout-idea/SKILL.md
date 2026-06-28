@@ -14,8 +14,8 @@ sweep you'd otherwise do by scrolling forums and bookmarking links, for when you
 have no bookmarks yet. This is deliberately **wide, not a curated shortlist**:
 **scout gathers, curation narrows.** Breadth is the point — the job is to surface
 *many* tools, repos, articles, and discussions, not to pre-pick the one winner.
-The downstream `curate-bookmarks` / `synthesize-drafts` steps do the filtering;
-don't do their job here.
+The downstream `synthesize-drafts` step does the filtering (it reads `scout/` as a
+synthesis input alongside `draft/`); don't do its job here.
 
 ## Vault paths
 - Work areas: `vault/01-work/areas/`
