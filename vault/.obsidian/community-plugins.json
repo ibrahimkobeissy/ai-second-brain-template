@@ -1,6 +1,8 @@
 [
   "mermaid-tools",
   "obsidian-tasks-plugin",
-  "mdmenu",
-  "obsidian-kanban"
+  "obsidian-kanban",
+  "dataview",
+  "table-editor-obsidian",
+  "editing-toolbar"
 ]
