@@ -179,6 +179,12 @@ const runDashboard = async () => {
         return `${days} days`;
     }
 
+    // Days since the file was last EDITED (mtime) — the "untouched"/idle age, distinct from
+    // ageForFile's created age. Staleness is about neglect, not how old a note is.
+    function idleDaysForFile(file) {
+        return daysSince(file.stat?.mtime || file.stat?.ctime || Date.now());
+    }
+
     function extractOpenCheckboxes(text, allowedLanes = null) {
         const results = [];
         let currentLane = "";
@@ -288,9 +294,13 @@ const runDashboard = async () => {
         const synthPrefix = `${area.path}/synthesis/`;
         const areaFiles = markdownFiles.filter((file) => file.path.startsWith(prefix));
 
-        // "Last active" = most recent created/mtime across the Area's notes (staleness/dormancy).
+        // "Last active" = most recent created/mtime across the Area's REAL notes (staleness/dormancy).
+        // Generated/system notes (per-area dashboards, the timeline) aren't "activity" — exclude them,
+        // else a freshly-scaffolded dashboard would reset every Area to active and suppress dormancy.
         let newestTouch = 0;
         areaFiles.forEach((file) => {
+            const t = normalizeField(frontmatter(file).type);
+            if (t.includes("dashboard") || t.includes("timeline")) return;
             const created = parseDate(frontmatter(file).created)?.getTime() || 0;
             newestTouch = Math.max(newestTouch, created, file.stat?.mtime || 0);
         });
@@ -306,7 +316,7 @@ const runDashboard = async () => {
 
                 // Synthesis plans live in synthesis/ (type: synthesis) — the decided-but-not-yet-executed layer.
                 if (file.path.startsWith(synthPrefix) && types.includes("synthesis")) {
-                    const days = ageForFile(file);
+                    const days = idleDaysForFile(file); // "untouched" age = days since last edit (mtime), not creation
                     const stale = days >= STALE_PLAN_DAYS;
                     area.plans.push({
                         title: cleanTitle(fm.title || file.basename),
@@ -328,7 +338,7 @@ const runDashboard = async () => {
                       : null;
                 if (!kind) return;
                 if (hasValue(fm.synthesized_into)) return;
-                const days = ageForFile(file);
+                const days = ageForFile(file); // unsynthesized-backlog age = since CREATION (editing a draft ≠ synthesizing it)
                 const stale = days >= STALE_SOURCE_DAYS;
                 const item = {
                     title: cleanTitle(fm.title || file.basename),

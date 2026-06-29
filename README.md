@@ -24,7 +24,7 @@ Most "second brain" setups rot: you capture endlessly and synthesize never. This
 ## 🚀 Quickstart
 
 1. **Use this template** (or clone the repo).
-2. Open the `vault/` folder in **Obsidian** and enable the bundled community plugins: **Kanban**, **Tasks**, **Mermaid Tools**, **mdmenu**.
+2. Open the `vault/` folder in **Obsidian** and install the community plugins it expects (listed in `vault/.obsidian/community-plugins.json`): **Dataview**, **Tasks**, **Kanban**, **Chronos Timeline**, **Mermaid Tools**, **Advanced Tables**, **Editing Toolbar**. Then turn on **DataviewJS** in Dataview's settings — the live dashboards (`dashboard.md`, per-Area dashboards) and the `areas-activity-timeline.md` need it. *(Plugins aren't bundled — Obsidian installs them for you.)*
 3. Install **[Claude Code](https://claude.com/claude-code)** (and/or Codex) and open the repo as your project — the agent reads `CLAUDE.md` automatically (Codex reads it via the `AGENTS.md` symlink).
 4. **Calibrate how the agents write to you:** `/calibrate-comms` — a 5-minute test so every doc afterward matches your style.
 5. Create your first Area: `/init-area`.
@@ -54,7 +54,7 @@ flowchart LR
 | `03-resources/` | Reference library and topics not tied to a responsibility. |
 | `04-archive/` | Inactive areas and cold storage. |
 | `99-system/` | Templates, documentation, maintenance board, attachments. |
-| `dashboard.md` | Live command center — pending work + browse-by-`type`, driven by the Tasks + Search plugins. |
+| `dashboard.md` | Live **DataviewJS** command center — pipeline metrics, staleness/dormancy, graph health, per-Area pulse. Plus a dashboard per Area and an `areas-activity-timeline.md` (git history → swimlanes). |
 
 ## 🧰 The Toolbelt (Skills)
 
@@ -122,4 +122,4 @@ Issues and PRs welcome — especially new skills and workflow improvements. New 
 
 You may use, adapt, and share this template for **non-commercial** purposes with attribution, and must license any derivatives under the same terms. **Commercial use requires separate permission.**
 
-> The bundled Obsidian plugins under `vault/.obsidian/plugins/` are third-party software and remain under their own original licenses (MIT/GPL) — see the carve-out in [LICENSE](LICENSE).
+> This template does **not** bundle third-party Obsidian plugins. Only `vault/.obsidian/community-plugins.json` (the *list* of plugins to enable) ships; you install the plugins yourself via Obsidian (see Quickstart), so each stays under its own author's license.

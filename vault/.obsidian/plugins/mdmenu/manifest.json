@@ -1,9 +1,0 @@
-{
-  "id": "mdmenu",
-  "name": "mdMenu",
-  "version": "1.0.4",
-  "minAppVersion": "1.12.7",
-  "description": "A mini WYSIWYG-style Markdown formatting toolbar.",
-  "author": "Michael Makarov",
-  "isDesktopOnly": false
-}

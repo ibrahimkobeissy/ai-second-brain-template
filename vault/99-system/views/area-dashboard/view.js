@@ -156,16 +156,22 @@ const runAreaDashboard = async () => {
         return Math.max(0, Math.floor((today.getTime() - then.getTime()) / DAY_MS));
     }
 
+    function ageLabel(days) {
+        if (days === 0) return "Today";
+        if (days === 1) return "1 day";
+        return `${days} days`;
+    }
+
+    // Age since CREATION — used for a source's "unsynthesized backlog" duration.
     function ageForFile(file) {
         const created = parseDate(frontmatter(file).created);
         const timestamp = created?.getTime() || file.stat?.ctime || file.stat?.mtime || Date.now();
         return daysSince(timestamp);
     }
 
-    function ageLabel(days) {
-        if (days === 0) return "Today";
-        if (days === 1) return "1 day";
-        return `${days} days`;
+    // Days since the file was last EDITED (mtime) — the "untouched"/idle age, used for plan staleness.
+    function idleDaysForFile(file) {
+        return daysSince(file.stat?.mtime || file.stat?.ctime || Date.now());
     }
 
     function extractOpenCheckboxes(text, allowedLanes = null) {
@@ -275,8 +281,12 @@ const runAreaDashboard = async () => {
         const synthPrefix = `${areaPath}/synthesis/`;
         const areaFiles = app.vault.getMarkdownFiles().filter((file) => file.path.startsWith(prefix));
 
+        // Exclude generated/system notes (dashboards, the timeline) — they aren't real "activity",
+        // else a freshly-scaffolded dashboard masks a genuinely dormant Area.
         let newestTouch = 0;
         areaFiles.forEach((file) => {
+            const t = normalizeField(frontmatter(file).type);
+            if (t.includes("dashboard") || t.includes("timeline")) return;
             const created = parseDate(frontmatter(file).created)?.getTime() || 0;
             newestTouch = Math.max(newestTouch, created, file.stat?.mtime || 0);
         });
@@ -291,7 +301,7 @@ const runAreaDashboard = async () => {
                 if (statuses.some((status) => INACTIVE_STATUSES.has(status))) return;
 
                 if (file.path.startsWith(synthPrefix) && types.includes("synthesis")) {
-                    const days = ageForFile(file);
+                    const days = idleDaysForFile(file); // "untouched" age = days since last edit (mtime), not creation
                     const stale = days >= STALE_PLAN_DAYS;
                     model.plans.push({
                         title: cleanTitle(fm.title || file.basename),
@@ -311,7 +321,7 @@ const runAreaDashboard = async () => {
                       : null;
                 if (!kind) return;
                 if (hasValue(fm.synthesized_into)) return;
-                const days = ageForFile(file);
+                const days = ageForFile(file); // unsynthesized-backlog age = since CREATION (editing a draft ≠ synthesizing it)
                 const stale = days >= STALE_SOURCE_DAYS;
                 const item = {
                     title: cleanTitle(fm.title || file.basename),
